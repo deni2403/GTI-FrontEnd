@@ -1,0 +1,19 @@
+$theme-colors: (
+  // 'primary': #113946,
+  "primary":#0077C2,
+  "secondary":#59a5f5,
+  "success": #2E8B57,
+  "primary-300":#c8ffff,
+  "accent-100":#00BFFF,
+  "accent-200":#00619a,
+  "dark":#333333,
+  "dark-200":#5c5c5c,
+  "bg-100":#FFFFFF,
+  "bg-200":#f5f5f5,
+  "bg-300":#cccccc,
+);
+
+
+
+
+@import "../node_modules/bootstrap/scss/bootstrap";

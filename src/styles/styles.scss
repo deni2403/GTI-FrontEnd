@@ -1,0 +1,1745 @@
+// @import 'custom';
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz@9..40&display=swap');
+
+:root {
+    --primary-color: #012970;
+    --secondary-color: #E58440;
+    --color-sky: #4574C7;
+    --light-green: #2E8B57;
+    --text-dark: #000000;
+    --text-gray: #595858;
+    --bg-light: #E9F1F6;
+    --bg-cloud: #BCE4FC;
+    --bg-white: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'DM Sans', sans-serif;
+}
+
+body {
+    margin: 0;
+}
+
+.col,
+.row,
+.container,
+.container-fluid {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+//Wrapper
+.app-container {
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.wrapper {
+    overflow: hidden;
+    padding: 0;
+    background-color: var(--bg-light);
+    transition: all 0.3s
+}
+
+.wrapper.collapsed {
+    margin-left: 80px;
+    transition: all 0.3s
+}
+
+
+//navbar
+nav {
+    background-color: var(--bg-white);
+    margin: 15px;
+
+    .toggler-button {
+        border: 0;
+        background-color: transparent;
+        margin: 0 15px;
+
+        svg {
+            height: 16px;
+            width: 16px;
+            color: var(--primary-color);
+        }
+    }
+
+    .brand-wrapper {
+        margin: 0 15px;
+
+        .brand-logo {
+            img {
+                max-width: 15px;
+                max-height: 30px;
+            }
+        }
+
+        .navbar-brand {
+            background-color: var(--bg-light);
+            padding: 5px;
+
+            .brand-name {
+                font-size: 14px;
+                font-weight: bold;
+                color: var(--color-sky);
+                margin-left: 5px;
+                letter-spacing: 2px;
+                text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+            }
+        }
+    }
+
+    .user-profile {
+        margin-right: 20px;
+        position: relative;
+        cursor: pointer;
+
+        .user-profile__image {
+            max-width: 35px;
+            max-height: 35px;
+            border: 2px solid var(--color-sky);
+        }
+    }
+
+    .user-profile__information {
+        background-color: var(--bg-white);
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 1000;
+        margin-top: 5px;
+
+        .user-information {
+            margin: 15px;
+
+            .user-image {
+                min-width: 45px;
+                max-width: 45px;
+                max-height: 45px;
+            }
+
+            .user-account {
+                margin-left: 15px;
+
+                .user-name {
+                    font-size: 14px;
+                    color: var(--text-dark);
+                    font-weight: 800;
+                }
+
+                .user-email {
+                    font-size: 14px;
+                    color: var(--text-gray);
+                }
+            }
+        }
+
+        .user-action {
+            margin: 10px 25px;
+
+            .user-role {
+
+                .title-text {
+                    color: var(--text-gray);
+                    font-size: 14px;
+                    font-weight: 600;
+                    letter-spacing: 1px;
+                }
+
+                .role-title {
+                    color: var(--text-gray);
+                    font-size: 12px;
+                    background-color: var(--bg-light);
+                    padding: 5px 10px;
+                    border-radius: 5px;
+                }
+            }
+
+            .logout-btn {
+                background-color: transparent;
+                border: 0;
+                color: var(--text-gray);
+                font-size: 14px;
+                font-weight: 600;
+                margin: 5px 0;
+            }
+        }
+    }
+}
+
+
+
+// Sidebar
+.sidebar {
+    max-width: 80px;
+    min-width: 80px;
+    transition: all 0.3s;
+    min-height: 100vh;
+    background-color: var(--bg-white);
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin-left: -80px;
+    transition: all 0.3s;
+
+    .sidebar-header {
+        background-color: var(--bg-light);
+
+        .sidebar-header__company {
+            .sidebar-header__company-logo {
+                img {
+                    max-width: 60px;
+                    max-height: 60px;
+                }
+            }
+
+            .sidebar-header__company-name {
+
+                h6 {
+                    font-size: 14px;
+                    font-weight: 800;
+                    color: var(--color-sky);
+                    margin: 0 10px;
+                    letter-spacing: 2px;
+                    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+                    text-transform: uppercase;
+                }
+
+                h6::first-letter {
+                    font-weight: 800;
+                    color: var(--primary-color);
+                }
+            }
+        }
+    }
+}
+
+.sidebar.collapsed {
+    transition: all 0.3s;
+    display: block;
+    margin-left: 0;
+}
+
+
+.list-group {
+    margin: 35px 10px;
+
+    a {
+        text-decoration: none;
+    }
+
+    .menu-info {
+        text-transform: uppercase;
+        font-size: 10px;
+        color: var(--primary-color);
+        font-weight: 600;
+        letter-spacing: 2px;
+        margin-top: 10px;
+    }
+
+    .menu-divider {
+        margin-top: 5px;
+        border: 1px solid var(--primary-color);
+    }
+
+    .list-group-item {
+        border: 0;
+        border-radius: 5px;
+        color: var(--text-200);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 10px 30px;
+        margin: 5px 0;
+
+        svg {
+            height: 20px;
+            width: 20px;
+            color: var(--primary-color);
+        }
+
+        span {
+            color: var(--primary-color);
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+    }
+
+    .list-group-item:hover {
+        background-color: var(--bg-light);
+
+        svg {
+            color: var(--color-sky);
+        }
+
+        span {
+            color: var(--color-sky);
+        }
+    }
+
+    //styling for sidebar selected item
+    .selected {
+        background-color: var(--bg-light);
+
+        svg {
+            color: var(--color-sky);
+        }
+
+        span {
+            color: var(--color-sky);
+        }
+    }
+}
+
+
+//General
+.content-wrapper {
+    width: 100%;
+    overflow: hidden;
+    margin: 0;
+    padding: 0 15px;
+    display: flex;
+}
+
+.table-title {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.pagination {
+    margin-top: 20px;
+    padding: 0 40px;
+
+    li {
+        max-width: 100%;
+    }
+
+}
+
+table {
+    th {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    td {
+        font-size: 14px;
+        text-align: center;
+    }
+}
+
+.add-button {
+    background-color: var(--color-sky);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.export-button {
+    background-color: var(--light-green);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.back-button {
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.edit-button {
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar {
+    button {
+        background-color: var(--color-sky);
+        padding: 5px 10px;
+
+        svg {
+            height: 13px;
+            width: 13px;
+        }
+    }
+}
+
+.data-filter {
+    select {
+        font-size: 14px;
+
+        option {
+            font-size: 14px;
+        }
+    }
+
+    button {
+        background-color: var(--color-sky);
+        padding: 5px 10px;
+
+        svg {
+            height: 13px;
+            width: 13px;
+        }
+    }
+}
+
+.data-form {
+    label {
+        font-weight: bold;
+        color: var(--text-100);
+    }
+
+    input {
+        color: var(--text-200);
+    }
+
+    textarea {
+        color: var(--text-200);
+    }
+}
+
+.filter {
+    position: relative;
+
+    .filter-btn {
+        background-color: var(--color-sky);
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 5px;
+        padding: 5px 10px;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .filter-options {
+        background-color: var(--bg-white);
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 1000;
+        padding: 10px;
+
+        .title {
+            font-size: 14px;
+            font-weight: bold;
+            // margin: 0 15px;
+            color: var(--text-gray);
+        }
+
+        .filter-options__title {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 5px;
+            color: var(--text-gray);
+        }
+
+        .filter-options__select {
+            margin: 10px 0;
+            padding: 0 5px;
+
+            select {
+                font-size: 12px;
+
+                option {
+                    font-size: 12px;
+                }
+            }
+
+            input {
+                font-size: 12px;
+                padding: 5px;
+            }
+        }
+
+        .filter-actions {
+            margin-top: 15px;
+            padding: 0 5px;
+
+            .apply-btn {
+                font-size: 12px;
+                font-weight: 600;
+                padding: 5px 10px;
+                background-color: var(--light-green);
+            }
+        }
+    }
+}
+
+.dashboard-page__welcome {
+    background-color: var(--bg-white);
+    padding: 10px 20px;
+    border-radius: 10px;
+    flex-direction: column;
+
+    .welcome-word {
+        .welcome_title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--color-sky);
+            margin-top: 10px;
+        }
+
+        .welcome_text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+        }
+    }
+
+    .welcome-image {
+        img {
+            max-width: 120px;
+            max-height: 120px;
+        }
+    }
+}
+
+.dashboard-table {
+    background-color: var(--bg-white);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+
+    .table-title {
+        font-size: 18px;
+    }
+
+}
+
+.chart_container {
+    background-color: var(--bg-white);
+    border-radius: 10px;
+
+    .dashboard-chart {
+
+        padding: 15px;
+        margin: 10px 0;
+
+        .table-title {
+            font-size: 18px;
+        }
+    }
+}
+
+//Shipment, All Container Page
+.page-container {
+    .page-container__table {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+    }
+
+    .table-title {
+        font-size: 18px;
+    }
+}
+
+
+// Super Admin Page
+.superAdmin-page__users {
+    background-color: var(--bg-white);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+
+    .table-title {
+        font-size: 18px;
+    }
+}
+
+.superAdmin-page__activity {
+    background-color: var(--bg-white);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 10px 0;
+
+    .table-title {
+        font-size: 18px;
+    }
+}
+
+
+//Detail Page (Shipment, User)
+.detail-page {
+    .detail-page__container {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+
+        .table-title {
+            font-size: 18px;
+        }
+
+        .profile-picture {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        form {
+            margin-top: 20px;
+
+            .form-group {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                font-size: 13px;
+                position: relative;
+
+                .datePicker {
+                    width: 50%;
+                    position: absolute;
+                    top: -2px;
+                    right: 0;
+
+                    .react-datepicker__input-container {
+
+                        input {
+                            width: 100%;
+
+                        }
+                    }
+                }
+
+                input {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                textarea {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                select {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                .unitButton{
+                    width: 75%;
+                }
+            }
+        }
+    }
+}
+
+
+// Detail Page for Container
+.contDetail-page {
+    .contDetail-page__content {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+
+        .table-title {
+            font-size: 18px;
+        }
+
+        form {
+            margin-top: 20px;
+
+            .form-group {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                font-size: 13px;
+
+                input {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                textarea {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                select {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                .unitButton{
+                    width: 75%;
+                }
+            }
+        }
+    }
+
+    .contDetail-page__table {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+
+        .table-title {
+            font-size: 18px;
+        }
+    }
+}
+
+
+// Create Page
+.create-page {
+    .create-page__container {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px;
+        margin: 10px 0;
+
+        .table-title {
+            font-size: 18px;
+        }
+
+        .profile-picture {
+            max-width: 100px;
+            max-height: 100px;
+        }
+
+        form {
+            margin-top: 20px;
+
+            .form-group {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                font-size: 13px;
+                position: relative;
+
+                .datePicker {
+                    width: 50%;
+                    position: absolute;
+                    top: -2px;
+                    right: 0;
+
+                    .react-datepicker__input-container {
+
+                        input {
+                            width: 100%;
+
+                        }
+                    }
+                }
+
+                input {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                textarea {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                select {
+                    width: 50%;
+                    font-size: 13px;
+                }
+
+                .unitButton{
+                    width: 50%;
+                }
+            }
+        }
+    }
+}
+
+
+// User Profile
+.profile-box {
+    background: rgb(0, 119, 194);
+    background: linear-gradient(120deg, rgba(0, 119, 194, 1) 25%, rgba(89, 165, 245, 1) 85%);
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+    color: white;
+
+    .profile-data {
+        font-size: 1.1rem;
+        text-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+    }
+}
+
+
+
+
+// Login Page
+.login-page {
+    min-height: 100vh;
+    background-color: var(--bg-light);
+
+    .login-page__section {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        max-width: 480px;
+        max-height: 515px;
+        margin: auto 30px;
+
+        .login-image {
+            margin: 40px 0;
+
+            img {
+                max-width: 120px;
+                max-height: 120px;
+            }
+        }
+
+        .login-form {
+            padding: 0 50px;
+
+            .login-form__input {
+                margin-bottom: 10px;
+
+                input {
+                    font-size: 12px;
+                    padding: 8px 10px;
+                }
+
+                .hidepw-btn {
+                    background-color: transparent;
+                    color: var(--text-gray);
+                    position: absolute;
+                    border: 0;
+                    padding: 0;
+                    margin: 0;
+                    font-size: 14px;
+                    top: 0.45rem;
+                    right: 0.9rem;
+                }
+            }
+
+            .login-form__btn {
+                margin: 20px 0;
+
+                button {
+                    padding: 5px 50px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    border-radius: 50px;
+                }
+            }
+        }
+    }
+}
+
+//Responsive
+@media (min-width: 768px) {
+
+    .wrapper {
+        margin-left: 150px;
+    }
+
+    .wrapper.collapsed {
+        margin-left: 0;
+    }
+
+    //navbar
+    nav {
+        margin: 15px 20px;
+
+        .toggler-button {
+            svg {
+                height: 20px;
+                width: 20px;
+                color: var(--color-sky);
+            }
+        }
+
+        .brand-wrapper {
+            margin: 0 20px;
+        }
+
+        .user-profile__information {
+
+            .user-information {
+
+                .user-image {
+                    max-width: 50px;
+                    max-height: 50px;
+                }
+
+                .user-account {
+                    margin-left: 15px;
+
+                    .user-name {
+                        font-size: 16px;
+                    }
+
+                    .user-email {
+                        font-size: 16px;
+                    }
+                }
+            }
+
+            .user-action {
+                margin: 15px 30px;
+
+                .user-role {
+
+                    .title-text {
+                        font-size: 16px;
+                    }
+
+                    .role-title {
+                        font-size: 14px;
+                        padding: 5px 10px;
+                    }
+                }
+
+                .logout-btn {
+                    font-size: 16px;
+                    margin: 5px 0;
+                }
+            }
+        }
+    }
+
+
+    // Sidebar
+    .sidebar {
+        max-width: 150px;
+        min-width: 150px;
+        margin-left: 0;
+    }
+
+    .sidebar.collapsed {
+        margin-left: -150px;
+    }
+
+    .list-group {
+        margin: 30px;
+
+        .menu-info {
+            font-size: 12px;
+        }
+
+        .menu-divider {
+            margin-bottom: 0;
+        }
+
+        .list-group-item {
+            padding: 10px 10px;
+
+            svg {
+                height: 25px;
+                width: 25px;
+            }
+
+            span {
+                font-size: 12px;
+            }
+        }
+    }
+
+
+
+    //General
+    .content-wrapper {
+        padding: 0 20px;
+    }
+
+
+
+    // Dashboard Page
+    
+    .dashboard-page__welcome{
+        flex-direction: row;
+    }
+
+    .dashboard-table {
+        .table-title {
+            font-size: 20px;
+        }
+    }
+
+    .chart_container {
+        .dashboard-chart {
+            .table-title {
+                font-size: 20px;
+            }
+        }
+    }
+
+    //Shipment, Container Page
+    .page-container {
+
+        .page-container__table {
+            padding: 20px;
+        }
+
+        .table-title {
+            font-size: 20px;
+        }
+    }
+
+
+    // Super Admin Page
+    .superAdmin-page__users {
+        padding: 20px;
+
+        .table-title {
+            font-size: 20px;
+        }
+    }
+
+    .superAdmin-page__activity {
+        padding: 20px;
+
+        .table-title {
+            font-size: 20px;
+        }
+    }
+
+
+    //Detail Page for shipment, user
+    .detail-page {
+
+        .detail-page__container {
+            padding: 20px;
+
+            .table-title {
+                font-size: 20px;
+            }
+
+            .profile-picture {
+                max-width: 120px;
+                max-height: 120px;
+            }
+
+            form {
+                .form-group {
+                    margin-bottom: 15px;
+                    font-size: 15px;
+
+                    .datePicker {
+                        width: 70%;
+
+                        .react-datepicker__input-container {
+
+                            input {
+                                width: 100%;
+
+                            }
+                        }
+                    }
+
+                    input {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    textarea {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    select {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    .unitButton{
+                        width: 75%;
+                    }
+                }
+            }
+        }
+    }
+
+
+    //Detail Page for Container
+    .contDetail-page {
+
+        .contDetail-page__content {
+            padding: 20px;
+
+            .table-title {
+                font-size: 20px;
+            }
+
+            form {
+                .form-group {
+                    margin-bottom: 15px;
+                    font-size: 15px;
+
+                    input {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    textarea {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    select {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    .unitButton{
+                        width: 75%;
+                    }
+                }
+            }
+        }
+
+        .contDetail-page__table {
+            margin: 10px 10px;
+            padding: 20px;
+
+            .table-title {
+                font-size: 20px;
+            }
+        }
+    }
+
+
+    //Create Page
+    .create-page {
+
+        .create-page__container {
+            padding: 20px;
+
+            .table-title {
+                font-size: 20px;
+            }
+
+            .profile-picture {
+                max-width: 120px;
+                max-height: 120px;
+            }
+
+            form {
+                .form-group {
+                    margin-bottom: 15px;
+                    font-size: 15px;
+
+
+                    .datePicker {
+                        width: 70%;
+
+                        .react-datepicker__input-container {
+
+                            input {
+                                width: 100%;
+
+                            }
+                        }
+                    }
+
+                    input {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    textarea {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    select {
+                        width: 70%;
+                        font-size: 15px;
+                    }
+
+                    .unitButton{
+                        width: 70%;
+                    }
+                }
+            }
+        }
+    }
+
+
+    // Login Page
+    .login-page {
+
+        .login-page__section {
+            .login-image {
+
+                img {
+                    max-width: 160px;
+                    max-height: 160px;
+                }
+            }
+
+            .login-form {
+                padding: 0 70px;
+
+                .login-form__input {
+                    margin-bottom: 10px;
+
+                    input {
+                        font-size: 14px;
+                        padding: 10px 15px;
+                    }
+
+                    .hidepw-btn {
+                        font-size: 16px;
+                        top: 0.6rem;
+                        right: 1rem;
+                    }
+                }
+
+                .login-form__btn {
+                    margin: 30px 0;
+
+                    button {
+                        font-size: 20px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (min-width: 992px) {
+
+    .wrapper {
+        margin-left: 250px;
+    }
+
+    .wrapper.collapsed {
+        margin-left: 0;
+    }
+
+    //navbar
+    nav {
+        margin: 20px 25px;
+        padding: 10px 0 !important;
+
+        .toggler-button {
+            margin-left: 20px;
+
+            svg {
+                height: 30px;
+                width: 30px;
+                color: var(--color-sky);
+            }
+        }
+
+        .user-profile__information {
+
+            .user-information {
+                margin: 20px;
+
+                .user-image {
+                    max-width: 50px;
+                    max-height: 50px;
+                }
+
+                .user-account {
+                    margin-left: 15px;
+
+                    .user-name {
+                        font-size: 16px;
+                    }
+
+                    .user-email {
+                        font-size: 16px;
+                    }
+                }
+            }
+
+            .user-action {
+                margin: 15px 30px;
+
+                .user-role {
+
+                    .title-text {
+                        font-size: 16px;
+                    }
+
+                    .role-title {
+                        font-size: 14px;
+                        padding: 5px 10px;
+                    }
+                }
+
+                .logout-btn {
+                    font-size: 16px;
+                    margin: 5px 0;
+                }
+            }
+        }
+    }
+
+
+    // Sidebar
+    .sidebar {
+        max-width: 250px;
+        min-width: 250px;
+        margin-left: 0;
+
+        .sidebar-header {
+            padding: 10px 0;
+            background-color: var(--bg-light);
+
+            .sidebar-header__company {
+                .sidebar-header__company-logo {
+                    img {
+                        max-width: 60px;
+                        max-height: 60px;
+                    }
+                }
+
+                .sidebar-header__company-name {
+
+                    h6 {
+                        font-size: 14px;
+                        margin: 0 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    .sidebar.collapsed {
+        margin-left: -250px;
+    }
+
+    .list-group {
+        margin: 35px 20px;
+
+        .menu-info {
+            font-size: 13px;
+            margin-top: 0;
+        }
+
+        .menu-divider {
+            margin-bottom: 20px;
+        }
+
+        .list-group-item {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            justify-content: normal;
+            padding: 10px 15px;
+
+            svg {
+                height: 30px;
+                width: 30px;
+            }
+
+            span {
+                margin-top: 0;
+                margin-left: 20px;
+                font-size: 16px;
+            }
+        }
+    }
+
+
+    //General
+    .content-wrapper {
+        padding: 10px 30px;
+    }
+
+    table {
+        th {
+            font-size: 16px;
+        }
+
+        td {
+            font-size: 16px;
+        }
+    }
+
+    .add-button {
+        padding: 6px 12px;
+        font-size: 16px;
+    }
+
+    .export-button {
+        padding: 6px 12px;
+        font-size: 16px;
+    }
+
+    .back-button {
+        padding: 6px 12px;
+        font-size: 16px;
+    }
+
+    .edit-button {
+        padding: 6px 12px;
+        font-size: 16px;
+    }
+
+    .search-bar {
+        button {
+            svg {
+                height: 16px;
+                width: 16px;
+            }
+        }
+    }
+
+    .data-filter {
+        select {
+            font-size: 16px;
+
+            option {
+                font-size: 16px;
+            }
+        }
+
+        button {
+            svg {
+                height: 16px;
+                width: 16px;
+            }
+        }
+    }
+
+    .filter {
+        .filter-btn {
+            padding: 6px 12px;
+            font-size: 16px;
+        }
+
+        .filter-options {
+            padding: 10px;
+
+            .title {
+                font-size: 16px;
+            }
+
+            .filter-options__title {
+                font-size: 15px;
+                margin: 0 10px;
+            }
+
+            .filter-options__select {
+                margin: 10px 0;
+                padding: 0 10px;
+
+                select {
+                    font-size: 14px;
+
+                    option {
+                        font-size: 14px;
+                    }
+                }
+
+                input {
+                    font-size: 14px;
+                }
+            }
+
+            .filter-actions {
+                margin-top: 20px;
+                margin-bottom: 5px;
+                padding: 0 10px;
+
+                .apply-btn {
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+
+
+    // Dashboard Page
+    .dashboard-page__welcome {
+        padding: 10px 20px;
+        flex-direction: row;
+
+        .welcome-word {
+            .welcome_title {
+                font-size: 1.5rem;
+            }
+
+            .welcome_text {
+                font-size: 1rem;
+            }
+        }
+    }
+
+    .dashboard-table {
+        padding: 20px;
+        margin: 30px 0;
+
+        .table-title {
+            font-size: 25px;
+        }
+    }
+
+    .chart_container {
+
+        .dashboard-chart {
+            padding: 20px;
+            margin: 20px 0;
+
+            .table-title {
+                font-size: 25px;
+            }
+        }
+    }
+
+
+    //Shipment, Container Page
+    .page-container {
+
+        .page-container__table {
+            padding: 30px;
+            margin: 10px 0;
+        }
+
+        .table-title {
+            font-size: 25px;
+        }
+    }
+
+
+    // Super Admin Page
+    .superAdmin-page__users {
+        padding: 30px;
+        margin: 20px 0;
+
+        .table-title {
+            font-size: 25px;
+        }
+    }
+
+    .superAdmin-page__activity {
+        padding: 30px;
+        margin: 20px 0;
+
+        .table-title {
+            font-size: 25px;
+        }
+    }
+
+
+    //Detail Page for shipment, user
+    .detail-page {
+
+        .detail-page__container {
+            padding: 30px;
+            margin: 15px 0;
+
+            .table-title {
+                font-size: 25px;
+            }
+
+            .profile-picture {
+                max-width: 180px;
+                max-height: 180px;
+            }
+
+            form {
+                margin-top: 30px;
+
+                .form-group {
+                    margin-bottom: 15px;
+                    font-size: 17px;
+
+                    .datePicker {
+                        width: 75%;
+
+                        .react-datepicker__input-container {
+
+                            input {
+                                width: 100%;
+                            }
+                        }
+                    }
+
+                    input {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    textarea {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    select {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    .unitButton{
+                        width: 75%;
+                    }
+                }
+            }
+        }
+    }
+
+
+    //Detail Page for Container
+    .contDetail-page {
+        .contDetail-page__content {
+            padding: 20px;
+            margin: 10px 0;
+
+            .table-title {
+                font-size: 25px;
+            }
+
+            form {
+                margin-top: 30px;
+
+                .form-group {
+                    margin-bottom: 15px;
+                    font-size: 17px;
+
+                    input {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    textarea {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    select {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    .unitButton{
+                        width: 75%;
+                    }
+                }
+            }
+        }
+
+        .contDetail-page__table {
+            padding: 25px;
+            margin: 10px 20px;
+
+            .table-title {
+                font-size: 25px;
+            }
+        }
+    }
+
+
+    //Create Page
+    .create-page {
+
+        .create-page__container {
+            padding: 30px;
+            margin: 10px 0;
+
+            .table-title {
+                font-size: 25px;
+            }
+
+            .profile-picture {
+                max-width: 180px;
+                max-height: 180px;
+            }
+
+            form {
+                margin-top: 30px;
+
+                .form-group {
+                    margin-bottom: 15px;
+                    font-size: 17px;
+
+                    .datePicker {
+                        width: 75%;
+
+                        .react-datepicker__input-container {
+
+                            input {
+                                width: 100%;
+                            }
+                        }
+                    }
+
+                    input {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+
+                    textarea {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    select {
+                        width: 75%;
+                        font-size: 17px;
+                    }
+
+                    .unitButton{
+                        width: 75%;
+                    }
+                }
+            }
+        }
+    }
+
+
+    .login-page {
+        .login-page__section {
+            .login-image {
+                img {
+                    max-width: 180px;
+                    max-height: 180px;
+                }
+            }
+
+            .login-form {
+                .login-form__input {
+                    margin-bottom: 20px;
+
+                    input {
+                        font-size: 15px;
+                        padding: 10px 15px;
+                    }
+                }
+
+                .login-form__btn {
+                    margin: 30px 0;
+
+                    button {
+                        font-size: 25px;
+                    }
+                }
+            }
+        }
+    }
+}
