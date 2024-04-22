@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
+import { Navbar, Container } from 'react-bootstrap';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import { MdLogout } from 'react-icons/md';
 import { profile } from '../utils/DummyData';

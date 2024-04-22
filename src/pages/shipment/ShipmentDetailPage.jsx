@@ -90,7 +90,7 @@ function ShipmentDetailPage() {
                       <MdEdit className="me-1" />
                       <span>Edit</span>
                     </Button>
-                    {userProfile.position === 'Super Admin' && (
+                    {userProfile.position !== 'Operasional' && (
                       <>
                         <Button
                           variant="danger"
@@ -164,7 +164,9 @@ function ShipmentDetailPage() {
                     <div key={index}>
                       <Form.Group className="form-group">
                         <Form.Label htmlFor={`unitNumber${index}`}>
-                          Unit Number
+                          {totalUnit === 1
+                            ? 'Unit Number'
+                            : `Unit Number ${index + 1}`}
                         </Form.Label>
                         <Form.Select>
                           <option hidden>Select Unit</option>

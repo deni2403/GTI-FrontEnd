@@ -16,7 +16,7 @@ function LoginPage() {
     >
       <Container className="login-page__section shadow">
         <Container fluid className="login-image d-flex justify-content-center">
-          <Image src="GTI_logo.png" fluid className="" />
+          <Image src="/GTI_logo.png" fluid className="" />
         </Container>
         <Container className="login-form">
           <Form>

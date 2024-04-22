@@ -73,8 +73,10 @@ function AddShipmentPage() {
                 {[...Array(totalUnit)].map((_, index) => (
                   <div key={index}>
                     <Form.Group className="form-group">
-                      <Form.Label htmlFor={`unitNumber${index}`}>
-                        Unit Number
+                      <Form.Label htmlFor={`unitNumber${index + 1}`}>
+                        {totalUnit === 1
+                          ? 'Unit Number'
+                          : `Unit Number ${index + 1}`}
                       </Form.Label>
                       <Form.Select>
                         <option hidden>Select Unit</option>

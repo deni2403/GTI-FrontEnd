@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container, Image } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
+import PropType from 'prop-types';
 
 function ContainerStatus({ icon, text, value }) {
   return (
@@ -14,5 +15,11 @@ function ContainerStatus({ icon, text, value }) {
     </Container>
   );
 }
+
+ContainerStatus.propTypes = {
+  icon: PropType.element,
+  text: PropType.string,
+  value: PropType.string,
+};
 
 export default ContainerStatus;

@@ -51,13 +51,6 @@ function DashboardPage() {
                 <h1 className="welcome_title">Good Afternoon, Vinnie Felim</h1>
                 <p className="welcome_text">{formattedDate}</p>
               </div>
-              {/* <div className="welcome-image">
-                <img
-                  src="/dashboard-welcome.jpg"
-                  alt="Welcome"
-                  className="img-fluid"
-                />
-              </div> */}
             </Container>
           </Col>
         </Row>

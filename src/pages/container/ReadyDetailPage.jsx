@@ -77,7 +77,7 @@ function ReadyDetailPage() {
                 <Container>
                   <TableTitle>Container Detail</TableTitle>
                 </Container>
-                {userProfile.position == 'Super Admin' &&
+                {userProfile.position !== 'Operasional' &&
                   (isEditing ? (
                     <Button
                       onClick={handleUpdateData}
