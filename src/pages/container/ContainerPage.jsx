@@ -1,24 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 import SearchBar from '../../components/SearchBar';
 import ButtonContainer from '../../components/ButtonContainer';
 import TableTitle from '../../components/tables/TableTitle';
-import Pagenumber from '../../components/Pagenumber';
 import ContainerData from '../../components/tables/ContainerData';
 import { Link } from 'react-router-dom';
 import { FaFileCirclePlus, FaFileExport } from 'react-icons/fa6';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
 import { FaFilter } from 'react-icons/fa';
-import { profile } from '../../utils/DummyData';
+
 
 function ContainerPage() {
-  const [userProfile, setUserProfile] = useState({});
+  const { user } = useSelector((state) => state.auth);
   const [showFilter, setShowFilter] = useState(false);
-
-  useEffect(() => {
-    setUserProfile(profile);
-  }, []);
 
   const handleShowFilter = () => {
     setShowFilter((prevState) => !prevState);
@@ -81,7 +77,7 @@ function ContainerPage() {
                   )}
                 </Container>
               </Container>
-              {userProfile.position !== 'Operasional' && (
+              {user.role !== 'Operasional' && (
                 <ButtonContainer>
                   <Link to="/containers/create">
                     <Button className="add-button">
@@ -99,7 +95,6 @@ function ContainerPage() {
                 </ButtonContainer>
               )}
               <ContainerData />
-              <Pagenumber />
             </Container>
           </Col>
         </Row>

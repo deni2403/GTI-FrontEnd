@@ -1,6 +1,6 @@
 const profile = {
   name: 'Vinnie Felim',
-  position: 'Customer Service',
+  position: 'Operasional',
   email: 'vinnie@gmail.com',
   location: 'Medan',
   image: 'https://source.unsplash.com/200x200/?woman',

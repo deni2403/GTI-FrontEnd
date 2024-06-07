@@ -1,30 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Image,
-  Button,
-  Form,
-  Modal,
-} from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Image, Button, Form } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { MdEdit, MdUpload, MdSave, MdDelete } from 'react-icons/md';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
-import { profile } from '../../utils/DummyData';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import { getUser, updateUser, deleteUser } from '../../api/UserAPI';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function UserDetailPage() {
-  const [userProfile, setUserProfile] = useState({});
+  const [imagePreview, setImagePreview] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
-    setUserProfile(profile);
-  }, []);
+    const fetchUser = async () => {
+      const data = await getUser(id);
+      formik.setValues(data.user);
+    };
+
+    fetchUser();
+  }, [id]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -34,17 +35,60 @@ function UserDetailPage() {
     setIsEditing(true);
   };
 
-  const handleUpdateData = () => {
-    setIsEditing(false);
-    NotifToast('Data successfully saved!', 'success');
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      role: '',
+      location: '',
+      email: '',
+      password: '',
+      image: null,
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Name is required'),
+      email: Yup.string()
+        .email('Invalid email format')
+        .required('Email is required'),
+      password: Yup.string()
+        .min(6, 'Must be at least 6 characters')
+        .required('Required'),
+      role: Yup.string().required('Role is required'),
+      location: Yup.string().required('Location is required'),
+    }),
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      for (let key in values) {
+        formData.append(key, values[key]);
+      }
+
+      const { error } = await updateUser(id, formData);
+      if (!error) {
+        setIsEditing(false);
+        NotifToast('Update User Successful !', 'success');
+      } else {
+        NotifToast('Failed to update user data!', 'error');
+      }
+    },
+  });
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    formik.setFieldValue('image', file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
-  const handleDelete = () => {
-    setShowDeleteModal(false);
-    NotifToast('User successfully deleted!', 'success');
-    setTimeout(() => {
-      navigate('/superadmin');
-    }, 1000);
+  const handleDeleteData = async () => {
+    const { error, data } = await deleteUser(id);
+
+    if (!error) {
+      setShowDeleteModal(false);
+      NotifToast(data, 'success');
+      setTimeout(() => {
+        navigate('/superadmin');
+      }, 1000);
+    } else {
+      NotifToast('Failed Delete User Data', 'error');
+    }
   };
 
   const handleCloseDeleteModal = () => {
@@ -70,7 +114,7 @@ function UserDetailPage() {
                 </Container>
                 {isEditing ? (
                   <Button
-                    onClick={handleUpdateData}
+                    onClick={formik.handleSubmit}
                     type="submit"
                     className="add-button m-0"
                   >
@@ -95,45 +139,47 @@ function UserDetailPage() {
                       <MdDelete className="me-1" />
                       <span>Delete</span>
                     </Button>
-                    <Modal
+                    <ConfirmationModal
                       show={showDeleteModal}
-                      onHide={handleCloseDeleteModal}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Confirmation</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <p>Are you sure you want to delete this user?</p>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={handleCloseDeleteModal}
-                        >
-                          Cancel
-                        </Button>
-                        <Button variant="danger" onClick={handleDelete}>
-                          Delete
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
+                      close={handleCloseDeleteModal}
+                      handleSubmit={handleDeleteData}
+                      variant={'danger'}
+                    />
                   </Container>
                 )}
                 <ToastContainer />
               </Container>
               <hr />
-              <Form>
+              <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="d-flex my-4 justify-content-center flex-column align-items-center">
                   <Image
-                    src={userProfile.image}
+                    src={
+                      imagePreview
+                        ? imagePreview
+                        : formik.values.image
+                        ? formik.values.image
+                        : '/user_profile.jpg'
+                    }
                     roundedCircle
                     fluid
                     alt="profile picture"
                     thumbnail
                     className="profile-picture"
                   />
+                  <Form.Control
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    style={{ display: 'none' }}
+                    id="user_image_upload"
+                  />
                   {isEditing && (
-                    <Button className="add-button mt-3">
+                    <Button
+                      className="add-button mt-3"
+                      onClick={() =>
+                        document.getElementById('user_image_upload').click()
+                      }
+                    >
                       <MdUpload className="me-1" />
                       <span>Upload Image</span>
                     </Button>
@@ -142,42 +188,99 @@ function UserDetailPage() {
                 <fieldset disabled={!isEditing}>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="name">Nama</Form.Label>
-                    <Form.Control
-                      id="name"
-                      value={userProfile.name}
-                      onChange={(e) =>
-                        setUserProfile({ ...userProfile, name: e.target.value })
-                      }
-                    />
+                    <div className="feedback-wrapper">
+                      <Form.Control
+                        id="name"
+                        name="name"
+                        value={formik.values.name || ''}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.name && formik.errors.name}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.name}
+                      </Form.Control.Feedback>
+                    </div>
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="position">Position</Form.Label>
-                    <Form.Select>
-                      <option hidden>{userProfile.position}</option>
-                      <option value="1">Super Admin</option>
-                      <option value="2">Customer Service</option>
-                      <option value="3">Operasional</option>
-                    </Form.Select>
+                    <Form.Label htmlFor="role">Position</Form.Label>
+                    <div className="feedback-wrapper">
+                      <Form.Select
+                        id="role"
+                        name="role"
+                        value={formik.values.role || ''}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.role && formik.errors.role}
+                      >
+                        <option value="Super Admin">Super Admin</option>
+                        <option value="Customer Service">
+                          Customer Service
+                        </option>
+                        <option value="Operasional">Operasional</option>
+                      </Form.Select>
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.role}
+                      </Form.Control.Feedback>
+                    </div>
+                  </Form.Group>
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="location">Location</Form.Label>
+                    <div className="feedback-wrapper">
+                      <Form.Select
+                        id="location"
+                        name="location"
+                        value={formik.values.location || ''}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={
+                          formik.touched.location && formik.errors.location
+                        }
+                      >
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="Makasar">Makasar</option>
+                        <option value="Medan">Medan</option>
+                        <option value="Surabaya">Surabaya</option>
+                      </Form.Select>
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.location}
+                      </Form.Control.Feedback>
+                    </div>
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="email">Email</Form.Label>
-                    <Form.Control
-                      id="email"
-                      value={userProfile.email}
-                      onChange={(e) =>
-                        setUserProfile({
-                          ...userProfile,
-                          email: e.target.value,
-                        })
-                      }
-                    />
+                    <div className="feedback-wrapper">
+                      <Form.Control
+                        id="email"
+                        name="email"
+                        value={formik.values.email || ''}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.email && formik.errors.email}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.email}
+                      </Form.Control.Feedback>
+                    </div>
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="username">Password</Form.Label>
-                    <Form.Control
-                      id="username"
-                      value=""
-                    />
+                    <Form.Label htmlFor="password">Password</Form.Label>
+                    <div className="feedback-wrapper">
+                      <Form.Control
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={formik.values.password || ''}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={
+                          formik.touched.password && formik.errors.password
+                        }
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.password}
+                      </Form.Control.Feedback>
+                    </div>
                   </Form.Group>
                 </fieldset>
               </Form>

@@ -87,7 +87,7 @@ function AddContainerPage() {
                   <Button
                     onClick={handleAddData}
                     type="submit"
-                    className="add-button"
+                    className="save-button"
                   >
                     <MdSave className="me-1" />
                     <span>Save</span>

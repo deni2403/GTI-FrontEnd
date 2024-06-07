@@ -1,42 +1,54 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Row, Col, Container } from 'react-bootstrap';
 import TableTitle from '../components/tables/TableTitle';
 import BarChart from '../components/chart/BarChart';
 import DoughnutChart from '../components/chart/DoughnutChart';
-import { shipmentTotal, containerStatus } from '../utils/DummyData';
+import { formattedDate, getGreetings } from '../utils/Utility';
+import { getContainersTotal } from '../api/containerAPI';
+import { getShipmentsTotal } from '../api/shipmentAPI';
 
 function DashboardPage() {
-  const [totalShipmentData, setTotalShipmentData] = useState(shipmentTotal);
-  const date = new Date();
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  }).format(date);
+  const { user } = useSelector((state) => state.auth);
+  const [greetings, setGreetings] = useState('');
+  const [totalShipmentData, setTotalShipmentData] = useState({});
+  const [containerStatusData, setcontainerStatusData] = useState({});
 
-  const [containerStatusData, setcontainerStatusData] =
-    useState(containerStatus);
+  useEffect(() => {
+    setGreetings(getGreetings());
+  }, []);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch('https://example.com/api/shipment-data');
-  //       const result = await response.json();
-  //       setTotalShipmentData(result);
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //     }
-  //   };
-  //   fetchData();
+  useEffect(() => {
+    const fetchContainerData = async () => {
+      try {
+        const response = await getContainersTotal();
+        const data = response.data;
+        setcontainerStatusData(data);
+      } catch (error) {
+        console.error('Error fetching data containers:', error);
+      }
+    };
 
-  //   // Set interval untuk memperbarui data setiap 5 menit (misalnya)
-  //   const intervalId = setInterval(() => {
-  //     fetchData();
-  //   }, 300000); // 300000 milidetik = 5 menit
-  //   // Membersihkan interval saat komponen di-unmount
-  //   return () => clearInterval(intervalId);
-  // }, []);
+    const fetchShipmentData = async () => {
+      try {
+        const response = await getShipmentsTotal();
+        const data = response.data;
+        setTotalShipmentData(data);
+      } catch (error) {
+        console.error('Error fetching data shipments:', error);
+      }
+    };
+
+    fetchContainerData();
+    fetchShipmentData();
+
+    // // Set interval untuk memperbarui data setiap 5 menit (misalnya)
+    // const intervalId = setInterval(() => {
+    //   fetchData();
+    // }, 300000); // 300000 milidetik = 5 menit
+    // // Membersihkan interval saat komponen di-unmount
+    // return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <Container fluid className="content-wrapper">
@@ -48,16 +60,11 @@ function DashboardPage() {
               className="dashboard-page__welcome shadow-sm d-flex justify-content-between"
             >
               <div className="welcome-word">
-                <h1 className="welcome_title">Good Afternoon, Vinnie Felim</h1>
+                <h1 className="welcome_title">
+                  {greetings}, {user.name}
+                </h1>
                 <p className="welcome_text">{formattedDate}</p>
               </div>
-              {/* <div className="welcome-image">
-                <img
-                  src="/dashboard-welcome.jpg"
-                  alt="Welcome"
-                  className="img-fluid"
-                />
-              </div> */}
             </Container>
           </Col>
         </Row>

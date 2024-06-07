@@ -1,21 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar, NavDropdown, Container, Nav } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { logOut, reset } from '../features/auth/authSlice';
+import { Navbar, Container } from 'react-bootstrap';
 import { RxHamburgerMenu } from 'react-icons/rx';
 import { MdLogout } from 'react-icons/md';
-import { profile } from '../utils/DummyData';
-import PropType from 'prop-types';
 
-function Navibar({ handleLogout }) {
-  const [userProfile, setUserProfile] = useState({});
+function Navibar() {
+  const { user } = useSelector((state) => state.auth);
   const [showProfileInfo, setShowProfileInfo] = useState(false);
-
-  useEffect(() => {
-    setUserProfile(profile);
-  }, []);
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  
   const showProfile = () => {
     setShowProfileInfo((prevState) => !prevState);
   };
+
+  const handleLogout = () => {
+    dispatch(logOut());
+    dispatch(reset());
+    navigate('/');
+  };
+
 
   return (
     <Navbar className="border-bottom shadow-sm rounded">
@@ -43,8 +49,8 @@ function Navibar({ handleLogout }) {
           onClick={showProfile}
         >
           <img
-            src={userProfile.image}
-            alt={userProfile.name}
+            src={user.image ? user.image : '/user_profile.jpg'}
+            alt={user.name}
             className="img-fluid rounded-circle"
           />
           {showProfileInfo && (
@@ -52,25 +58,25 @@ function Navibar({ handleLogout }) {
               <div className="user-information d-flex justify-content-between">
                 <div className="user-image">
                   <img
-                    src={userProfile.image}
-                    alt={userProfile.name}
-                    className="img-fluid rounded"
+                    src={user.image ? user.image : '/user_profile.jpg'}
+                    alt={user.name}
+                    className="img-fluid rounded border shadow-sm"
                   />
                 </div>
                 <div className="user-account">
-                  <h6 className="user-name">{userProfile.name}</h6>
-                  <h6 className="user-email">{userProfile.email}</h6>
+                  <h6 className="user-name">{user.name}</h6>
+                  <h6 className="user-email">{user.email}</h6>
                 </div>
               </div>
               <hr />
               <div className="user-action">
                 <div className="user-role d-flex justify-content-between align-items-center">
                   <h6 className="title-text">Role</h6>
-                  <h6 className="role-title">{userProfile.position}</h6>
+                  <h6 className="role-title">{user.role}</h6>
                 </div>
                 <div className="user-role d-flex justify-content-between align-items-center">
                   <h6 className="title-text">Location</h6>
-                  <h6 className="role-title">{userProfile.location}</h6>
+                  <h6 className="role-title">{user.location}</h6>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -86,9 +92,5 @@ function Navibar({ handleLogout }) {
     </Navbar>
   );
 }
-
-Navibar.propTypes = {
-  handleLogout: PropType.func.isRequired,
-};
 
 export default Navibar;

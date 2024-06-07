@@ -1,33 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Form, Modal } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { useParams, useNavigate } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { MdEdit, MdSave, MdDelete } from 'react-icons/md';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
-import { profile, shipmentData } from '../../utils/DummyData';
 import DatePicker from 'react-datepicker';
+import { getShipment } from '../../api/shipmentAPI';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import { getContainersReady } from '../../api/containerAPI';
 
 function ShipmentDetailPage() {
-  const [userProfile, setUserProfile] = useState({});
-  const [dataShipment, setDataShipment] = useState({});
+  const { user } = useSelector((state) => state.auth);
+  const [dataShipment, setDataShipment] = useState({
+    number: '',
+    container_number: '',
+    shipper: '',
+    stuffing_date: '',
+    POL: '',
+    POD: '',
+    ETD: '',
+    ETA: '',
+    status: '',
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
   const [totalUnit, setTotalUnit] = useState(1);
   const [shipmentStatus, setShipmentStatus] = useState('');
   const navigate = useNavigate();
+  const { id } = useParams();
+  const [contReady, setContReady] = useState([]);
+  const [selectedUnits, setSelectedUnits] = useState({});
 
   useEffect(() => {
-    setUserProfile(profile);
-    setDataShipment(shipmentData);
+    const fetchContainersReady = async () => {
+      const data = await getContainersReady();
+      setContReady(data.container);
+    };
+
+    fetchContainersReady();
   }, []);
+
+  useEffect(() => {
+    const fetchShipment = async () => {
+      const data = await getShipment(id);
+      const shipment = data.shipment;
+      setDataShipment({
+        number: shipment.number,
+        container_number: shipment.container.number,
+        shipper: shipment.shipment_detail.shipper,
+        stuffing_date: shipment.shipment_detail.stuffing_date,
+        POL: shipment.shipment_detail.POL,
+        POD: shipment.shipment_detail.POD,
+        ETD: shipment.shipment_detail.ETD,
+        ETA: shipment.shipment_detail.ETA,
+        status: shipment.status,
+      });
+    };
+    fetchShipment();
+  }, [id]);
 
   const handleGoBack = () => {
     navigate(-1);
   };
 
+  // Add edit, update, and delete data function
   const handleEditData = () => {
     setIsEditing(true);
   };
@@ -37,7 +77,7 @@ function ShipmentDetailPage() {
     NotifToast('Data successfully saved!', 'success');
   };
 
-  const handleDelete = (e) => {
+  const handleDeleteData = (e) => {
     e.preventDefault();
     setShowDeleteModal(false);
     NotifToast('Data successfully deleted!', 'success');
@@ -48,14 +88,33 @@ function ShipmentDetailPage() {
     setShowDeleteModal(false);
   };
 
+  // Add increment and decrement total unit function
   const handleIncrementTotalUnit = () => {
-    setTotalUnit(totalUnit + 1);
+    if (totalUnit < contReady.length) {
+      setTotalUnit(totalUnit + 1);
+    }
   };
 
   const handleDecrementTotalUnit = () => {
     if (totalUnit > 1) {
       setTotalUnit(totalUnit - 1);
     }
+  };
+
+  const handleSelectUnit = (index, value) => {
+    setSelectedUnits((prevSelectedUnits) => {
+      const newSelectedUnits = { ...prevSelectedUnits, [index]: value };
+      const containerNumbers = Object.values(newSelectedUnits).join(', ');
+      setDataShipment((prevData) => ({
+        ...prevData,
+        container_number: containerNumbers,
+      }));
+      return newSelectedUnits;
+    });
+  };
+
+  const getDisabledUnits = () => {
+    return Object.values(selectedUnits);
   };
 
   return (
@@ -90,7 +149,7 @@ function ShipmentDetailPage() {
                       <MdEdit className="me-1" />
                       <span>Edit</span>
                     </Button>
-                    {userProfile.position === 'Super Admin' && (
+                    {user.role !== 'Operasional' && (
                       <>
                         <Button
                           variant="danger"
@@ -100,28 +159,12 @@ function ShipmentDetailPage() {
                           <MdDelete className="me-1" />
                           <span>Delete</span>
                         </Button>
-                        <Modal
+                        <ConfirmationModal
                           show={showDeleteModal}
-                          onHide={handleCloseDeleteModal}
-                        >
-                          <Modal.Header closeButton>
-                            <Modal.Title>Confirmation</Modal.Title>
-                          </Modal.Header>
-                          <Modal.Body>
-                            <p>Are you sure you want to delete this data?</p>
-                          </Modal.Body>
-                          <Modal.Footer>
-                            <Button
-                              variant="secondary"
-                              onClick={handleCloseDeleteModal}
-                            >
-                              Cancel
-                            </Button>
-                            <Button variant="danger" onClick={handleDelete}>
-                              Delete
-                            </Button>
-                          </Modal.Footer>
-                        </Modal>
+                          close={handleCloseDeleteModal}
+                          handleSubmit={handleDeleteData}
+                          variant={'danger'}
+                        />
                       </>
                     )}
                   </Container>
@@ -130,14 +173,13 @@ function ShipmentDetailPage() {
               </Container>
               <hr />
               <Form>
-                <fieldset
-                  disabled={userProfile.position == 'Operasional' || !isEditing}
-                >
+                <fieldset disabled={user.role == 'Operasional' || !isEditing}>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="bookNumber">Book Number</Form.Label>
+                    <Form.Label htmlFor="number">Book Number</Form.Label>
                     <Form.Control
-                      id="bookNumber"
-                      value={dataShipment.bookNumber}
+                      id="number"
+                      name="number"
+                      value={dataShipment.number || ''}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
@@ -163,14 +205,29 @@ function ShipmentDetailPage() {
                   {[...Array(totalUnit)].map((_, index) => (
                     <div key={index}>
                       <Form.Group className="form-group">
-                        <Form.Label htmlFor={`unitNumber${index}`}>
-                          Unit Number
+                        <Form.Label htmlFor={`unitNumber${index + 1}`}>
+                          {totalUnit === 1
+                            ? 'Unit Number'
+                            : `Unit Number ${index + 1}`}
                         </Form.Label>
-                        <Form.Select>
-                          <option hidden>Select Unit</option>
-                          <option value="1">GESU9282682</option>
-                          <option value="2">GTNU8880042</option>
-                          <option value="3">GTRU8880140</option>
+                        <Form.Select
+                          onChange={(e) =>
+                            handleSelectUnit(index, e.target.value)
+                          }
+                          value={selectedUnits[index] || ''}
+                        >
+                          {contReady &&
+                            contReady.map((container) => (
+                              <option
+                                key={container.number}
+                                value={container.number}
+                                disabled={getDisabledUnits().includes(
+                                  container.number,
+                                )}
+                              >
+                                {container.number}
+                              </option>
+                            ))}
                         </Form.Select>
                       </Form.Group>
                     </div>
@@ -180,10 +237,6 @@ function ShipmentDetailPage() {
                     <Form.Control id="shipper" value={dataShipment.shipper} />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="bookedBy">Booked By</Form.Label>
-                    <Form.Control id="bookedBy" value={dataShipment.bookedBy} />
-                  </Form.Group>
-                  <Form.Group className="form-group">
                     <Form.Label htmlFor="stuffingDate">
                       Stuffing Date
                     </Form.Label>
@@ -191,27 +244,26 @@ function ShipmentDetailPage() {
                       className="form-control ms-auto"
                       wrapperClassName="datePicker"
                       id="stuffingDate"
-                      selected={startDate}
+                      selected={dataShipment.stuffing_date}
                       onChange={(date) => setStartDate(date)}
                       dateFormat={'dd/MM/yyyy'}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="pol">Port of Loading</Form.Label>
-                    <Form.Control id="pol" value={dataShipment.pol} />
+                    <Form.Control id="pol" value={dataShipment.POL} />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="pod">Port of Discharge</Form.Label>
-                    <Form.Control id="pod" value={dataShipment.pod} />
+                    <Form.Control id="pod" value={dataShipment.POD} />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="etd">ETD</Form.Label>
-                    {/* <Form.Control id="etd" value={dataShipment.etd} /> */}
                     <DatePicker
                       className="form-control ms-auto"
                       wrapperClassName="datePicker"
                       id="etd"
-                      selected={startDate}
+                      selected={dataShipment.ETD}
                       onChange={(date) => setStartDate(date)}
                       dateFormat={'dd/MM/yyyy'}
                     />
@@ -223,7 +275,7 @@ function ShipmentDetailPage() {
                     disabled={!isEditing}
                     onChange={(e) => setShipmentStatus(e.target.value)}
                   >
-                    <option hidden>Shipment Status</option>
+                    <option hidden>{dataShipment.status}</option>
                     <option value="1">Arrive</option>
                     <option value="2">Depature</option>
                     <option value="3">Pickup</option>
