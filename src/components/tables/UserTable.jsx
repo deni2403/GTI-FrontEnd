@@ -1,72 +1,74 @@
-import React from 'react';
-import { Table } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Table } from 'react-bootstrap';
 import { BsInfoCircle } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import { getAllUsers } from '../../api/UserAPI';
+import ReactPaginate from 'react-paginate';
 
 function UserTable() {
+  const [users, setUsers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const data = await getAllUsers(currentPage + 1);
+      setUsers(data.users);
+      setTotalPages(data.totalPage);
+    };
+
+    fetchUsers();
+  }, [currentPage]);
+
+  const onPageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
   return (
-    <Table responsive striped bordered className="mt-1">
-      <thead className="text-center">
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Detail</th>
-        </tr>
-      </thead>
-      <tbody className="text-center">
-        <tr>
-          <td>1</td>
-          <td>Vinnie Felim</td>
-          <td>vinnie@gmail.com</td>
-          <td className="text-center">
-            <Link to="/superadmin/users/detail">
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>Deni</td>
-          <td>deni24@gmail.com</td>
-          <td className="text-center">
-            <Link to="/superadmin/users/detail">
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Data 3</td>
-          <td>Data 3</td>
-          <td className="text-center">
-            <Link to="/superadmin/users/detail">
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Data 4</td>
-          <td>Data 4</td>
-          <td className="text-center">
-            <Link to="/superadmin/users/detail">
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>5</td>
-          <td>Data 5</td>
-          <td>Data 5</td>
-          <td className="text-center">
-            <Link to="/superadmin/users/detail">
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-      </tbody>
-    </Table>
+    <>
+      <Container className="table-container">
+        <Table responsive striped bordered className="mt-1">
+          <thead className="text-center">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <tbody className="text-center">
+            {users &&
+              users.map((user, index) => (
+                <tr key={user.uuid}>
+                  <td>{index + 1}</td>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                  <td className="text-center">
+                    <Link to={`/superadmin/users/detail/${user.uuid}`}>
+                      <BsInfoCircle />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </Table>
+      </Container>
+      <ReactPaginate
+        previousLabel={'<'}
+        nextLabel={'>'}
+        breakLabel={'...'}
+        pageCount={totalPages}
+        onPageChange={onPageChange}
+        breakLinkClassName={'page-link'}
+        breakClassName={'page-item'}
+        containerClassName={'pagination justify-content-center'}
+        pageLinkClassName={'page-link'}
+        previousLinkClassName={'page-link'}
+        nextLinkClassName={'page-link'}
+        activeLinkClassName={'page-item active'}
+        disabledLinkClassName={'page-item disabled'}
+      />
+    </>
   );
 }
 

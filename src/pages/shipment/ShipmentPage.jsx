@@ -1,26 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import SearchBar from '../../components/SearchBar';
 import ButtonContainer from '../../components/ButtonContainer';
 import ShipmentData from '../../components/tables/ShipmentData';
-import Pagenumber from '../../components/Pagenumber';
 import TableTitle from '../../components/tables/TableTitle';
 import { Link } from 'react-router-dom';
 import { FaFileCirclePlus, FaFileExport } from 'react-icons/fa6';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
-import { profile } from '../../utils/DummyData';
 import { FaFilter } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 
 function ShipmentPage() {
-  const [userProfile, setUserProfile] = useState({});
+  const { user } = useSelector((state) => state.auth);
   const [showFilter, setShowFilter] = useState(false);
   const [startDate, setStartDate] = useState(new Date());
-
-  useEffect(() => {
-    setUserProfile(profile);
-  }, []);
 
   const handleShowFilter = () => {
     setShowFilter((prevState) => !prevState);
@@ -71,7 +66,7 @@ function ShipmentPage() {
                   )}
                 </Container>
               </Container>
-              {userProfile.position !== 'Operasional' && (
+              {user.role !== 'Operasional' && (
                 <ButtonContainer>
                   <Link to="/shipments/create">
                     <Button className="add-button">
@@ -90,7 +85,6 @@ function ShipmentPage() {
                 </ButtonContainer>
               )}
               <ShipmentData />
-              <Pagenumber />
             </Container>
           </Col>
         </Row>

@@ -1,28 +1,44 @@
-import React, { useState } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Table,
-  Button,
-  Form,
-  Modal,
-} from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Table, Button, Form } from 'react-bootstrap';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { MdEdit, MdSave, MdDelete, MdUpload } from 'react-icons/md';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
 import { FaRegCircleCheck } from 'react-icons/fa6';
+import { getRepair } from '../../api/repairmentAPI';
 
 function RepairDetailPage() {
-  const [isSuperAdmin, setIsSuperAdmin] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
   const navigate = useNavigate();
-  const role = 'operasional';
+  const { id } = useParams();
+  const [repairment, setRepairment] = useState({
+    number: '',
+    type: '',
+    age: '',
+    location: '',
+    remark: '',
+  });
+
+  useEffect(() => {
+    const fetchRepair = async () => {
+      const data = await getRepair(id);
+      const repair = data.repair;
+      setRepairment({
+        number: repair.container.number,
+        type: repair.container.type,
+        age: repair.container.age,
+        location: repair.container.location,
+        remark: repair.remarks,
+      });
+    };
+
+    fetchRepair();
+  }, [id]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -37,7 +53,7 @@ function RepairDetailPage() {
     NotifToast('Data successfully saved!', 'success');
   };
 
-  const handleDelete = () => {
+  const handleDeleteData = () => {
     setShowDeleteModal(false);
     NotifToast('Data successfully deleted!', 'success');
     setTimeout(() => {
@@ -61,14 +77,6 @@ function RepairDetailPage() {
     setShowFinishModal(false);
   };
 
-  const repairData = {
-    number: 'GNU9282682',
-    type: '20 feet',
-    age: '8 years',
-    location: 'Medan',
-    remark: 'Perbaikan Pintu Kontainer',
-  };
-
   return (
     <Container fluid className="content-wrapper">
       <Container fluid className="contDetail-page">
@@ -86,7 +94,7 @@ function RepairDetailPage() {
                 <Container>
                   <TableTitle>Repair Detail</TableTitle>
                 </Container>
-                {isSuperAdmin && isEditing ? (
+                {isEditing ? (
                   <Button onClick={handleUpdateData} className="add-button m-0">
                     <MdSave className="me-1" />
                     <span>Save</span>
@@ -109,54 +117,36 @@ function RepairDetailPage() {
                       <MdDelete className="me-1" />
                       <span>Delete</span>
                     </Button>
-                    <Modal
+                    <ConfirmationModal
                       show={showDeleteModal}
-                      onHide={handleCloseDeleteModal}
-                    >
-                      <Modal.Header closeButton>
-                        <Modal.Title>Confirmation</Modal.Title>
-                      </Modal.Header>
-                      <Modal.Body>
-                        <p>Are you sure you want to delete this data?</p>
-                      </Modal.Body>
-                      <Modal.Footer>
-                        <Button
-                          variant="secondary"
-                          onClick={handleCloseDeleteModal}
-                        >
-                          Cancel
-                        </Button>
-                        <Button variant="danger" onClick={handleDelete}>
-                          Delete
-                        </Button>
-                      </Modal.Footer>
-                    </Modal>
+                      close={handleCloseDeleteModal}
+                      handleSubmit={handleDeleteData}
+                      variant={'danger'}
+                    />
                   </Container>
                 )}
                 <ToastContainer />
               </Container>
               <hr />
               <Form>
-                <fieldset
-                  disabled={!isEditing || (role === 'operasional' && isEditing)}
-                >
+                <fieldset disabled={!isEditing}>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="contNumber">Number</Form.Label>
-                    <Form.Control id="contNumber" value={repairData.number} />
+                    <Form.Control id="contNumber" value={repairment.number} />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="contType">Type</Form.Label>
-                    <Form.Control id="contType" value={repairData.type} />
+                    <Form.Control id="contType" value={repairment.type} />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="contAge">Age</Form.Label>
-                    <Form.Control id="contAge" value={repairData.age} />
+                    <Form.Control id="contAge" value={repairment.age} />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="contLocation">Location</Form.Label>
                     <Form.Control
                       id="contLocation"
-                      value={repairData.location}
+                      value={repairment.location}
                     />
                   </Form.Group>
                 </fieldset>
@@ -166,7 +156,7 @@ function RepairDetailPage() {
                     disabled={!isEditing}
                     as="textarea"
                     id="remark"
-                    value={repairData.remark}
+                    value={repairment.remark}
                   />
                 </Form.Group>
                 <Form.Group className="form-group">
@@ -187,25 +177,12 @@ function RepairDetailPage() {
                   <FaRegCircleCheck className="me-1" />
                   Finish Repair
                 </Button>
-                <Modal show={showFinishModal} onHide={handleCloseFinishModal}>
-                  <Modal.Header closeButton>
-                    <Modal.Title>Confirmation</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    <p>Are you sure you want to finish this repairment?</p>
-                  </Modal.Body>
-                  <Modal.Footer>
-                    <Button
-                      variant="secondary"
-                      onClick={handleCloseFinishModal}
-                    >
-                      Cancel
-                    </Button>
-                    <Button variant="success" onClick={handleFinishRepair}>
-                      Finish
-                    </Button>
-                  </Modal.Footer>
-                </Modal>
+                <ConfirmationModal
+                  show={showFinishModal}
+                  close={handleCloseFinishModal}
+                  handleSubmit={handleFinishRepair}
+                  variant={'success'}
+                />
               </div>
             </Container>
           </Col>

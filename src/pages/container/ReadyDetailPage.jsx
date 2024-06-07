@@ -1,30 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Table,
-  Form,
-  Modal,
-} from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Container, Row, Col, Button, Table, Form } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { MdEdit, MdSave, MdDelete } from 'react-icons/md';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
-import { profile } from '../../utils/DummyData';
+import {
+  getContainer,
+  updateContainer,
+  deleteContainer,
+  getContainerHistory,
+} from '../../api/containerAPI';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function ReadyDetailPage() {
-  const [userProfile, setUserProfile] = useState({});
+  const { user } = useSelector((state) => state.auth);
+  const [containerHistory, setContainerHistory] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
-    setUserProfile(profile);
-  }, []);
+    const fetchContainer = async () => {
+      const data = await getContainer(id);
+      formik.setValues(data.container);
+    };
+
+    const fetchHistory = async () => {
+      const data = await getContainerHistory(id);
+      setContainerHistory(data.history);
+    };
+
+    fetchContainer();
+    fetchHistory();
+  }, [id]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -34,30 +48,52 @@ function ReadyDetailPage() {
     setIsEditing(true);
   };
 
-  const handleUpdateData = () => {
-    setIsEditing(false);
-    NotifToast('Data successfully saved!', 'success');
-  };
+  const formik = useFormik({
+    initialValues: {
+      number: '',
+      type: '',
+      status: '',
+      age: '',
+      iddle_days: '',
+      location: '',
+    },
+    validationSchema: Yup.object({
+      number: Yup.string().required('Container Number is required'),
+      type: Yup.string().required('Type is required'),
+      age: Yup.string().required('Age is required'),
+      iddle_days: Yup.string().required('Iddle Days is required'),
+      location: Yup.string().required('Location is required'),
+    }),
+    onSubmit: async (values) => {
+      const { error, data } = await updateContainer(id, values);
 
-  const handleDelete = () => {
-    setShowDeleteModal(false);
-    NotifToast('Data successfully deleted!', 'success');
-    setTimeout(() => {
-      navigate('/containers');
-    }, 1000);
+      if (!error) {
+        navigate('/containers');
+        NotifToast(data, 'success');
+      } else {
+        NotifToast('Failed to update container.', 'error');
+      }
+    },
+  });
+
+  const handleDeleteData = async (e) => {
+    e.preventDefault();
+
+    const { error, data } = await deleteContainer(id);
+
+    if (!error) {
+      setShowDeleteModal(false);
+      NotifToast(data, 'success');
+      setTimeout(() => {
+        navigate('/containers');
+      }, 1000);
+    } else {
+      NotifToast('Failed to delete container data!', 'error');
+    }
   };
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
-  };
-
-  const containerData = {
-    number: 'GTNU8880042',
-    status: 'Ready',
-    type: '20 feet',
-    age: '3 years',
-    iddleDays: '60 days',
-    location: 'Medan',
   };
 
   return (
@@ -77,10 +113,11 @@ function ReadyDetailPage() {
                 <Container>
                   <TableTitle>Container Detail</TableTitle>
                 </Container>
-                {userProfile.position !== 'Operasional' &&
+                {user.role !== 'Operasional' &&
                   (isEditing ? (
                     <Button
-                      onClick={handleUpdateData}
+                      onClick={formik.handleSubmit}
+                      type="submit"
                       className="add-button m-0"
                     >
                       <MdSave className="me-1" />
@@ -104,47 +141,42 @@ function ReadyDetailPage() {
                         <MdDelete className="me-1" />
                         <span>Delete</span>
                       </Button>
-                      <Modal
+                      <ConfirmationModal
                         show={showDeleteModal}
-                        onHide={handleCloseDeleteModal}
-                      >
-                        <Modal.Header closeButton>
-                          <Modal.Title>Confirmation</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                          <p>Are you sure you want to delete this data?</p>
-                        </Modal.Body>
-                        <Modal.Footer>
-                          <Button
-                            variant="secondary"
-                            onClick={handleCloseDeleteModal}
-                          >
-                            Cancel
-                          </Button>
-                          <Button variant="danger" onClick={handleDelete}>
-                            Delete
-                          </Button>
-                        </Modal.Footer>
-                      </Modal>
+                        close={handleCloseDeleteModal}
+                        handleSubmit={handleDeleteData}
+                        variant={'danger'}
+                      />
                     </Container>
                   ))}
                 <ToastContainer />
               </Container>
               <hr />
-              <Form>
+              <Form onSubmit={formik.handleSubmit}>
                 <fieldset disabled={!isEditing}>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="contNumber">Number</Form.Label>
+                    <Form.Label htmlFor="number">Number</Form.Label>
                     <Form.Control
-                      id="contNumber"
-                      value={containerData.number}
+                      id="number"
+                      name="number"
+                      value={formik.values.number || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.number && formik.errors.number}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="type">Type</Form.Label>
-                    <Form.Select>
-                      <option>{containerData.type}</option>
-                      <option value="40">40 feet</option>
+                    <Form.Select
+                      id="type"
+                      name="type"
+                      value={formik.values.type || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.type && formik.errors.type}
+                    >
+                      <option value="20 feet">20 feet</option>
+                      <option value="40 feet">40 feet</option>
                     </Form.Select>
                   </Form.Group>
                   <Form.Group className="form-group">
@@ -152,28 +184,49 @@ function ReadyDetailPage() {
                     <Form.Control
                       disabled
                       id="status"
-                      value={containerData.status}
+                      value={formik.values.status || ''}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="contAge">Age</Form.Label>
-                    <Form.Control id="contAge" value={containerData.age} />
+                    <Form.Label htmlFor="age">Age</Form.Label>
+                    <Form.Control
+                      id="age"
+                      name="age"
+                      value={formik.values.age || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.age && formik.errors.age}
+                    />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="iddleDays">Iddle Days</Form.Label>
+                    <Form.Label htmlFor="iddle_days">Iddle Days</Form.Label>
                     <Form.Control
-                      id="iddleDays"
-                      value={containerData.iddleDays}
+                      id="iddle_days"
+                      name="iddle_days"
+                      value={formik.values.iddle_days || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.iddle_days && formik.errors.iddle_days
+                      }
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="location">Location</Form.Label>
-                    <Form.Select>
-                      <option hidden>Select Location</option>
-                      <option value="jakarta">Jakarta</option>
-                      <option value="makasar">Makasar</option>
-                      <option value="medan">Medan</option>
-                      <option value="surabaya">Surabaya</option>
+                    <Form.Select
+                      id="location"
+                      name="location"
+                      value={formik.values.location || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.location && formik.errors.location
+                      }
+                    >
+                      <option value="Jakarta">Jakarta</option>
+                      <option value="Makassar">Makassar</option>
+                      <option value="Medan">Medan</option>
+                      <option value="Surabaya">Surabaya</option>
                     </Form.Select>
                   </Form.Group>
                 </fieldset>
@@ -196,27 +249,7 @@ function ReadyDetailPage() {
                   <tr>
                     <td>1</td>
                     <td>Book Number 1</td>
-                    <td>Booked By 1</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>Book Number 2</td>
-                    <td>Booked By 2</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>Book Number 3</td>
-                    <td>Booked By 3</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>Book Number 4</td>
-                    <td>Booked By 4</td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td>Book Number 5</td>
-                    <td>Booked By 5</td>
+                    <td>Shipper</td>
                   </tr>
                 </tbody>
               </Table>

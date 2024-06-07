@@ -11,7 +11,7 @@ function ButtonContainer({ children }) {
 }
 
 ButtonContainer.propTypes = {
-  children: PropTypes.object,
+  children: PropTypes.node.isRequired,
 };
 
 export default ButtonContainer;

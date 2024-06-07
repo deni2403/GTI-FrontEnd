@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { ListGroup } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MdDashboard, MdAdminPanelSettings } from 'react-icons/md';
 import { GiCargoCrate, GiCargoShip, GiAutoRepair } from 'react-icons/gi';
-import { profile } from '../utils/DummyData';
 
 function Sidebar() {
-  const [userProfile, setUserProfile] = useState({});
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  useEffect(() => {
-    setUserProfile(profile);
-  }, []);
-
-  const handleItemClick = (index) => {
-    setSelectedItem(index);
-  };
+  const { user } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const pathSegments = location.pathname.split('/').filter(Boolean);
+  const segment = pathSegments[0];
 
   return (
     <aside className="sidebar shadow">
@@ -34,35 +28,43 @@ function Sidebar() {
       <ListGroup>
         <span className="menu-info">Menu</span>
         <hr className="menu-divider" />
-        <Link to="/" onClick={() => handleItemClick(0)}>
-          <ListGroup.Item className={selectedItem === 0 ? 'selected' : ''}>
+        <Link to="/dashboard">
+          <ListGroup.Item className={segment === 'dashboard' ? 'selected' : ''}>
             <MdDashboard />
             <span className="d-none d-sm-inline">Dashboard</span>
           </ListGroup.Item>
         </Link>
-        <Link to="/shipments" onClick={() => handleItemClick(1)}>
-          <ListGroup.Item className={selectedItem === 1 ? 'selected' : ''}>
+        <Link to="/shipments">
+          <ListGroup.Item className={segment === 'shipments' ? 'selected' : ''}>
             <GiCargoShip />
             <span className="d-none d-sm-inline">Shipment</span>
           </ListGroup.Item>
         </Link>
-        <Link to="/containers" onClick={() => handleItemClick(2)}>
-          <ListGroup.Item className={selectedItem === 2 ? 'selected' : ''}>
+        <Link to="/containers">
+          <ListGroup.Item
+            className={segment === 'containers' ? 'selected' : ''}
+          >
             <GiCargoCrate />
             <span className="d-none d-sm-inline">Container</span>
           </ListGroup.Item>
         </Link>
-        <Link to="/repairments" onClick={() => handleItemClick(3)}>
-          <ListGroup.Item className={selectedItem === 3 ? 'selected' : ''}>
+        <Link to="/repairments">
+          <ListGroup.Item
+            className={segment === 'repairments' ? 'selected' : ''}
+          >
             <GiAutoRepair />
             <span className="d-none d-sm-inline">Repairment</span>
           </ListGroup.Item>
         </Link>
-        {userProfile.position == 'Super Admin' && (
-          <Link to="/superadmin" onClick={() => handleItemClick(4)}>
-            <ListGroup.Item className={selectedItem === 4 ? 'selected' : ''}>
+        {user.role == 'Super Admin' && (
+          <Link to="/superadmin">
+            <ListGroup.Item
+              className={segment === 'superadmin' ? 'selected' : ''}
+            >
               <MdAdminPanelSettings />
-              <span className="d-none d-sm-inline text-center">Super Admin</span>
+              <span className="d-none d-sm-inline text-center">
+                Super Admin
+              </span>
             </ListGroup.Item>
           </Link>
         )}

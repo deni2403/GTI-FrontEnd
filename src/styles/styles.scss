@@ -102,9 +102,14 @@ nav {
         cursor: pointer;
 
         .user-profile__image {
-            max-width: 35px;
-            max-height: 35px;
+            width: 40px;
+            height: 40px;
             border: 2px solid var(--color-sky);
+
+            img{
+                height: 100%;
+                width: 100%;
+            }
         }
     }
 
@@ -318,22 +323,26 @@ nav {
 
 .pagination {
     margin-top: 20px;
-    padding: 0 40px;
+    // padding: 0 40px;
 
     li {
         max-width: 100%;
+
+        a{
+            font-size: 12px;
+        }
     }
 
 }
 
 table {
     th {
-        font-size: 14px;
+        font-size: 12px;
         text-align: center;
     }
 
     td {
-        font-size: 14px;
+        font-size: 12px;
         text-align: center;
     }
 }
@@ -344,7 +353,18 @@ table {
     font-weight: 600;
     border-radius: 5px;
     padding: 5px 10px;
-    margin: 10px 0;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.save-button {
+    background-color: var(--color-sky);
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 10px;
     display: flex;
     align-items: center;
 }
@@ -355,9 +375,10 @@ table {
     font-weight: 600;
     border-radius: 5px;
     padding: 5px 10px;
-    margin: 10px 0;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .back-button {
@@ -555,12 +576,16 @@ table {
     .page-container__table {
         background-color: var(--bg-white);
         border-radius: 10px;
-        padding: 15px;
-        margin: 10px 0;
+        padding: 15px 20px;
+        height: 590px;
     }
 
     .table-title {
         font-size: 18px;
+    }
+
+    .table-container {
+        height: 340px;
     }
 }
 
@@ -569,11 +594,16 @@ table {
 .superAdmin-page__users {
     background-color: var(--bg-white);
     border-radius: 10px;
-    padding: 15px;
+    padding: 15px 20px;
     margin: 10px 0;
+    height: 460px;
 
     .table-title {
         font-size: 18px;
+    }
+
+    .table-container {
+        height: 270px;
     }
 }
 
@@ -602,8 +632,8 @@ table {
         }
 
         .profile-picture {
-            max-width: 100px;
-            max-height: 100px;
+            width: 90px;
+            height: 90px;
         }
 
         form {
@@ -613,7 +643,7 @@ table {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 10px;
+                margin: 15px;
                 font-size: 13px;
                 position: relative;
                 transition: all 0.5s;
@@ -633,6 +663,20 @@ table {
                     }
                 }
 
+                .feedback-wrapper {
+                    width: 50%;
+
+                    input {
+                        width: 100%;
+                        font-size: 13px;
+                    }
+
+                    select {
+                        width: 100%;
+                        font-size: 13px;
+                    }
+                }
+
                 input {
                     width: 50%;
                     font-size: 13px;
@@ -648,8 +692,8 @@ table {
                     font-size: 13px;
                 }
 
-                .unitButton{
-                    width: 75%;
+                .unitButton {
+                    width: 50%;
                 }
             }
         }
@@ -676,9 +720,23 @@ table {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 10px;
+                margin: 15px;
                 font-size: 13px;
                 transition: all 0.5s;
+
+                .feedback-wrapper {
+                    width: 50%;
+
+                    input {
+                        width: 100%;
+                        font-size: 13px;
+                    }
+
+                    select {
+                        width: 100%;
+                        font-size: 13px;
+                    }
+                }
 
                 input {
                     width: 50%;
@@ -695,8 +753,8 @@ table {
                     font-size: 13px;
                 }
 
-                .unitButton{
-                    width: 75%;
+                .unitButton {
+                    width: 50%;
                 }
             }
         }
@@ -728,8 +786,8 @@ table {
         }
 
         .profile-picture {
-            max-width: 100px;
-            max-height: 100px;
+            width: 90px;
+            height: 90px;
         }
 
         form {
@@ -739,7 +797,7 @@ table {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                margin-bottom: 10px;
+                margin: 15px;
                 font-size: 13px;
                 position: relative;
                 transition: all 0.5s;
@@ -759,6 +817,20 @@ table {
                     }
                 }
 
+                .feedback-wrapper {
+                    width: 50%;
+
+                    input {
+                        width: 100%;
+                        font-size: 13px;
+                    }
+
+                    select {
+                        width: 100%;
+                        font-size: 13px;
+                    }
+                }
+
                 input {
                     width: 50%;
                     font-size: 13px;
@@ -774,7 +846,7 @@ table {
                     font-size: 13px;
                 }
 
-                .unitButton{
+                .unitButton {
                     width: 50%;
                 }
             }
@@ -891,7 +963,7 @@ table {
 
                 .user-image {
                     max-width: 50px;
-                    max-height: 50px;
+                    max-height: 70px;
                 }
 
                 .user-account {
@@ -974,11 +1046,30 @@ table {
         padding: 0 20px;
     }
 
+    table {
+        th {
+            font-size: 14px;
+        }
+    
+        td {
+            font-size: 14px;
+        }
+    }
 
+    .pagination {
+        li {
+            max-width: 100%;
+    
+            a{
+                font-size: 14px;
+            }
+        }
+    
+    }
 
     // Dashboard Page
-    
-    .dashboard-page__welcome{
+
+    .dashboard-page__welcome {
         flex-direction: row;
     }
 
@@ -1001,20 +1092,30 @@ table {
 
         .page-container__table {
             padding: 20px;
+            height: 630px;
         }
 
         .table-title {
             font-size: 20px;
+        }
+
+        .table-container {
+            height: 365px;
         }
     }
 
 
     // Super Admin Page
     .superAdmin-page__users {
-        padding: 20px;
+        padding: 20px 30px;
+        height: 460px;
 
         .table-title {
             font-size: 20px;
+        }
+
+        .table-container {
+            height: 250px;
         }
     }
 
@@ -1038,13 +1139,12 @@ table {
             }
 
             .profile-picture {
-                max-width: 120px;
-                max-height: 120px;
+                width: 100px;
+                height: 100px;
             }
 
             form {
                 .form-group {
-                    margin-bottom: 15px;
                     font-size: 15px;
                     transition: all 0.5s;
 
@@ -1057,6 +1157,20 @@ table {
                                 width: 100%;
 
                             }
+                        }
+                    }
+
+                    .feedback-wrapper {
+                        width: 70%;
+
+                        input {
+                            width: 100%;
+                            font-size: 15px;
+                        }
+
+                        select {
+                            width: 100%;
+                            font-size: 15px;
                         }
                     }
 
@@ -1075,8 +1189,8 @@ table {
                         font-size: 15px;
                     }
 
-                    .unitButton{
-                        width: 75%;
+                    .unitButton {
+                        width: 70%;
                     }
                 }
             }
@@ -1096,9 +1210,22 @@ table {
 
             form {
                 .form-group {
-                    margin-bottom: 15px;
                     font-size: 15px;
                     transition: all 0.5s;
+
+                    .feedback-wrapper {
+                        width: 75%;
+
+                        input {
+                            width: 100%;
+                            font-size: 15px;
+                        }
+
+                        select {
+                            width: 100%;
+                            font-size: 15px;
+                        }
+                    }
 
                     input {
                         width: 70%;
@@ -1115,8 +1242,8 @@ table {
                         font-size: 15px;
                     }
 
-                    .unitButton{
-                        width: 75%;
+                    .unitButton {
+                        width: 70%;
                     }
                 }
             }
@@ -1144,13 +1271,12 @@ table {
             }
 
             .profile-picture {
-                max-width: 120px;
-                max-height: 120px;
+                width: 100px;
+                height: 100px;
             }
 
             form {
                 .form-group {
-                    margin-bottom: 15px;
                     font-size: 15px;
                     transition: all 0.5s;
 
@@ -1164,6 +1290,20 @@ table {
                                 width: 100%;
 
                             }
+                        }
+                    }
+
+                    .feedback-wrapper {
+                        width: 70%;
+
+                        input {
+                            width: 100%;
+                            font-size: 15px;
+                        }
+
+                        select {
+                            width: 100%;
+                            font-size: 15px;
                         }
                     }
 
@@ -1182,7 +1322,7 @@ table {
                         font-size: 15px;
                     }
 
-                    .unitButton{
+                    .unitButton {
                         width: 70%;
                     }
                 }
@@ -1264,8 +1404,8 @@ table {
                 margin: 20px;
 
                 .user-image {
-                    max-width: 50px;
-                    max-height: 50px;
+                    max-width: 65px;
+                    max-height: 65px;
                 }
 
                 .user-account {
@@ -1376,6 +1516,19 @@ table {
         padding: 10px 30px;
     }
 
+    .pagination {
+        margin-top: 30px;
+
+        li {
+            max-width: 100%;
+    
+            a{
+                font-size: 16px;
+            }
+        }
+    
+    }
+
     table {
         th {
             font-size: 16px;
@@ -1387,6 +1540,11 @@ table {
     }
 
     .add-button {
+        padding: 6px 12px;
+        font-size: 16px;
+    }
+
+    .save-button {
         padding: 6px 12px;
         font-size: 16px;
     }
@@ -1523,11 +1681,15 @@ table {
 
         .page-container__table {
             padding: 30px;
-            margin: 10px 0;
+            height: 600px;
         }
 
         .table-title {
             font-size: 25px;
+        }
+
+        .table-container {
+            height: 270px;
         }
     }
 
@@ -1536,9 +1698,14 @@ table {
     .superAdmin-page__users {
         padding: 30px;
         margin: 20px 0;
+        height: 520px;
 
         .table-title {
             font-size: 25px;
+        }
+
+        .table-container {
+            height: 270px;
         }
     }
 
@@ -1564,15 +1731,14 @@ table {
             }
 
             .profile-picture {
-                max-width: 180px;
-                max-height: 180px;
+                width: 150px;
+                height: 150px;
             }
 
             form {
                 margin-top: 30px;
 
                 .form-group {
-                    margin-bottom: 15px;
                     font-size: 17px;
                     transition: all 0.5s;
 
@@ -1584,6 +1750,20 @@ table {
                             input {
                                 width: 100%;
                             }
+                        }
+                    }
+
+                    .feedback-wrapper {
+                        width: 75%;
+
+                        input {
+                            width: 100%;
+                            font-size: 17px;
+                        }
+
+                        select {
+                            width: 100%;
+                            font-size: 17px;
                         }
                     }
 
@@ -1602,7 +1782,7 @@ table {
                         font-size: 17px;
                     }
 
-                    .unitButton{
+                    .unitButton {
                         width: 75%;
                     }
                 }
@@ -1625,9 +1805,22 @@ table {
                 margin-top: 30px;
 
                 .form-group {
-                    margin-bottom: 15px;
                     font-size: 17px;
                     transition: all 0.5s;
+
+                    .feedback-wrapper {
+                        width: 75%;
+
+                        input {
+                            width: 100%;
+                            font-size: 17px;
+                        }
+
+                        select {
+                            width: 100%;
+                            font-size: 17px;
+                        }
+                    }
 
                     input {
                         width: 75%;
@@ -1644,7 +1837,7 @@ table {
                         font-size: 17px;
                     }
 
-                    .unitButton{
+                    .unitButton {
                         width: 75%;
                     }
                 }
@@ -1674,15 +1867,14 @@ table {
             }
 
             .profile-picture {
-                max-width: 180px;
-                max-height: 180px;
+                width: 150px;
+                height: 150px;
             }
 
             form {
                 margin-top: 30px;
 
                 .form-group {
-                    margin-bottom: 15px;
                     font-size: 17px;
                     transition: all 0.5s;
 
@@ -1694,6 +1886,20 @@ table {
                             input {
                                 width: 100%;
                             }
+                        }
+                    }
+
+                    .feedback-wrapper {
+                        width: 75%;
+
+                        input {
+                            width: 100%;
+                            font-size: 17px;
+                        }
+
+                        select {
+                            width: 100%;
+                            font-size: 17px;
                         }
                     }
 
@@ -1713,7 +1919,7 @@ table {
                         font-size: 17px;
                     }
 
-                    .unitButton{
+                    .unitButton {
                         width: 75%;
                     }
                 }

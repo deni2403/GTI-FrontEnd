@@ -1,90 +1,85 @@
-import React from 'react';
-import { Table } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Table, Container } from 'react-bootstrap';
 import { BsInfoCircle } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import { getAllContainers } from '../../api/containerAPI';
+import ReactPaginate from 'react-paginate';
 
 function ContainerData() {
+  const [containers, setContainers] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    const fetchContainers = async () => {
+      const data = await getAllContainers(currentPage + 1);
+      setContainers(data.containers);
+      setTotalPages(data.totalPage);
+    };
+
+    fetchContainers();
+  }, [currentPage]);
+
+  const onPageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
   return (
-    <Table striped responsive className="border mt-1">
-      <thead>
-        <tr>
-          <th>Unit Num</th>
-          <th>Type</th>
-          <th>Status</th>
-          <th>Location</th>
-          <th>Iddle Days</th>
-          <th>Age (Years)</th>
-          <th>Detail</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>GTNU8880042</td>
-          <td>20 feet</td>
-          <td>Ready</td>
-          <td>Medan</td>
-          <td>60</td>
-          <td>3</td>
-          <td>
-            <Link to="/containers/ready/detail">
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>GESU9282682</td>
-          <td>20 feet</td>
-          <td>In Use</td>
-          <td>Medan</td>
-          <td>0</td>
-          <td>2</td>
-          <td>
-            <Link to="/containers/in-use/detail">
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>Data 3</td>
-          <td>Data 3</td>
-          <td>Data 3</td>
-          <td>Data 3</td>
-          <td>Data 3</td>
-          <td>
-            <Link>
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>Data 4</td>
-          <td>Data 4</td>
-          <td>Data 4</td>
-          <td>Data 4</td>
-          <td>Data 4</td>
-          <td>
-            <Link>
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-        <tr>
-          <td>5</td>
-          <td>Data 5</td>
-          <td>Data 5</td>
-          <td>Data 5</td>
-          <td>Data 5</td>
-          <td>Data 5</td>
-          <td>
-            <Link>
-              <BsInfoCircle />
-            </Link>
-          </td>
-        </tr>
-      </tbody>
-    </Table>
+    <>
+      <Container className="table-container">
+        {containers.length === 0 && <h2>No containers found</h2>}
+        <Table striped responsive className="border mt-1">
+          <thead>
+            <tr>
+              <th>Unit Num</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Location</th>
+              <th>Iddle Days</th>
+              <th>Age (Years)</th>
+              <th>Detail</th>
+            </tr>
+          </thead>
+          <tbody>
+            {containers &&
+              containers.map((container) => (
+                <tr key={container.uuid}>
+                  <td>{container.number}</td>
+                  <td>{container.type}</td>
+                  <td>{container.status}</td>
+                  <td>{container.location}</td>
+                  <td>{container.iddle_days}</td>
+                  <td>{container.age}</td>
+                  <td>
+                    <Link
+                      to={`/containers/${container.status.toLowerCase()}/detail/${
+                        container.uuid
+                      }`}
+                    >
+                      <BsInfoCircle />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </Table>
+      </Container>
+      <ReactPaginate
+        previousLabel={'<'}
+        nextLabel={'>'}
+        breakLabel={'...'}
+        pageCount={totalPages}
+        onPageChange={onPageChange}
+        breakLinkClassName={'page-link'}
+        breakClassName={'page-item'}
+        containerClassName={'pagination justify-content-center'}
+        pageLinkClassName={'page-link'}
+        previousLinkClassName={'page-link'}
+        nextLinkClassName={'page-link'}
+        activeLinkClassName={'page-item active'}
+        disabledLinkClassName={'page-item disabled'}
+      />
+    </>
   );
 }
 

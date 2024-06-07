@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import SearchBar from '../../components/SearchBar';
 import ButtonContainer from '../../components/ButtonContainer';
 import RepairData from '../../components/tables/RepairData';
-import Pagenumber from '../../components/Pagenumber';
 import TableTitle from '../../components/tables/TableTitle';
 import { Link } from 'react-router-dom';
 import { FaFileCirclePlus, FaFileExport } from 'react-icons/fa6';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
-import { profile } from '../../utils/DummyData';
 
 function ContainerRepair() {
-  const [userProfile, setUserProfile] = useState({});
+  const { user } = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    setUserProfile(profile);
-  }, []);
 
   const handleExportData = () => {
     NotifToast('Data successfully exported!', 'success');
@@ -37,23 +33,22 @@ function ContainerRepair() {
               </Container>
               <ButtonContainer>
                 <Link to="/repairments/create">
-                  <Button className="add-button">
+                  <Button className="add-button mt-1">
                     <FaFileCirclePlus className="me-1" />
                     Add Data
                   </Button>
                 </Link>
-                {userProfile.position !== 'Operasional' && (
+                {user.role !== 'Operasional' && (
                   <Button
                     onClick={handleExportData}
                     variant="success"
-                    className="export-button"
+                    className="export-button mt-1"
                   >
                     <FaFileExport className="me-1" /> Export Data
                   </Button>
                 )}
               </ButtonContainer>
               <RepairData />
-              <Pagenumber />
             </Container>
           </Col>
         </Row>

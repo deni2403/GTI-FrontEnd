@@ -35,7 +35,7 @@ function SuperAdminPage() {
                 <Link to="/superadmin/users/create">
                   <Button
                     variant="primary"
-                    className="add-button d-flex align-items-center"
+                    className="add-button mt-1 d-flex align-items-center"
                   >
                     <BsFillPersonPlusFill className="me-2" />
                     <span>Add User</span>
@@ -43,7 +43,6 @@ function SuperAdminPage() {
                 </Link>
               </Container>
               <UserTable />
-              <Pagenumber />
             </Container>
           </Col>
         </Row>
