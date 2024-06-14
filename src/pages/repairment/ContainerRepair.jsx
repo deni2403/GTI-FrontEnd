@@ -50,7 +50,7 @@ function ContainerRepair() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setSearchParams({ page: 1, search: searchQuery, status, location });
+    setSearchParams({ page: 1, search: searchQuery });
   };
 
   const handleExportData = async () => {
