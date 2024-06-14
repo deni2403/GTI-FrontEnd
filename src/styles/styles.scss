@@ -106,7 +106,7 @@ nav {
             height: 40px;
             border: 2px solid var(--color-sky);
 
-            img{
+            img {
                 height: 100%;
                 width: 100%;
             }
@@ -328,7 +328,7 @@ nav {
     li {
         max-width: 100%;
 
-        a{
+        a {
             font-size: 12px;
         }
     }
@@ -471,20 +471,21 @@ table {
         .title {
             font-size: 14px;
             font-weight: bold;
-            // margin: 0 15px;
+            margin-top: 5px;
             color: var(--text-gray);
         }
 
-        .filter-options__title {
-            font-size: 13px;
-            font-weight: 600;
-            margin: 0 5px;
-            color: var(--text-gray);
-        }
 
         .filter-options__select {
             margin: 10px 0;
             padding: 0 5px;
+
+            .filter-options__title {
+                font-size: 13px;
+                font-weight: 600;
+                margin: 8px 0;
+                color: var(--text-gray);
+            }
 
             select {
                 font-size: 12px;
@@ -502,13 +503,20 @@ table {
 
         .filter-actions {
             margin-top: 15px;
-            padding: 0 5px;
+            padding: 0;
 
             .apply-btn {
                 font-size: 12px;
-                font-weight: 600;
-                padding: 5px 10px;
+                font-weight: 500;
+                padding: 5px 5px;
                 background-color: var(--light-green);
+            }
+
+            .reset-btn {
+                font-size: 12px;
+                font-weight: 500;
+                padding: 5px 5px;
+                background-color: var(--color-sky);
             }
         }
     }
@@ -615,6 +623,10 @@ table {
 
     .table-title {
         font-size: 18px;
+    }
+
+    .table-container {
+        height: 270px;
     }
 }
 
@@ -756,6 +768,14 @@ table {
                 .unitButton {
                     width: 50%;
                 }
+
+                .repairment-image {
+                    width: 50%;
+                }
+
+                .repair-image-btn {
+                    width: 50%;
+                }
             }
         }
     }
@@ -829,6 +849,11 @@ table {
                         width: 100%;
                         font-size: 13px;
                     }
+
+                    textarea {
+                        width: 100%;
+                        font-size: 13px;
+                    }
                 }
 
                 input {
@@ -844,6 +869,10 @@ table {
                 select {
                     width: 50%;
                     font-size: 13px;
+                }
+
+                .repairment-image {
+                    width: 50%;
                 }
 
                 .unitButton {
@@ -1050,7 +1079,7 @@ table {
         th {
             font-size: 14px;
         }
-    
+
         td {
             font-size: 14px;
         }
@@ -1059,12 +1088,12 @@ table {
     .pagination {
         li {
             max-width: 100%;
-    
-            a{
+
+            a {
                 font-size: 14px;
             }
         }
-    
+
     }
 
     // Dashboard Page
@@ -1124,6 +1153,10 @@ table {
 
         .table-title {
             font-size: 20px;
+        }
+
+        .table-container {
+            height: 250px;
         }
     }
 
@@ -1245,6 +1278,19 @@ table {
                     .unitButton {
                         width: 70%;
                     }
+
+                    .repairment-image {
+                        width: 70%;
+
+                        img {
+                            width: 70%;
+                            height: 70%;
+                        }
+                    }
+
+                    .repair-image-btn {
+                        width: 60%;
+                    }
                 }
             }
         }
@@ -1305,6 +1351,11 @@ table {
                             width: 100%;
                             font-size: 15px;
                         }
+
+                        textarea {
+                            width: 100%;
+                            font-size: 15px;
+                        }
                     }
 
                     input {
@@ -1320,6 +1371,15 @@ table {
                     select {
                         width: 70%;
                         font-size: 15px;
+                    }
+
+                    .repairment-image {
+                        width: 70%;
+
+                        img {
+                            width: 70%;
+                            height: 70%;
+                        }
                     }
 
                     .unitButton {
@@ -1521,12 +1581,12 @@ table {
 
         li {
             max-width: 100%;
-    
-            a{
+
+            a {
                 font-size: 16px;
             }
         }
-    
+
     }
 
     table {
@@ -1597,23 +1657,27 @@ table {
         }
 
         .filter-options {
-            padding: 10px;
+            padding: 15px 5px;
+
 
             .title {
                 font-size: 16px;
+                margin-left: 10px;
             }
 
-            .filter-options__title {
-                font-size: 15px;
-                margin: 0 10px;
-            }
 
             .filter-options__select {
-                margin: 10px 0;
-                padding: 0 10px;
+                margin: 10px 15px;
+
+                .filter-options__title {
+                    font-size: 15px;
+                    margin: 10px 0px;
+                }
 
                 select {
                     font-size: 14px;
+                    margin-right: 20px;
+
 
                     option {
                         font-size: 14px;
@@ -1627,10 +1691,15 @@ table {
 
             .filter-actions {
                 margin-top: 20px;
-                margin-bottom: 5px;
-                padding: 0 10px;
+                padding: 0;
 
                 .apply-btn {
+                    padding: 5px 10px;
+                    font-size: 14px;
+                }
+
+                .reset-btn {
+                    padding: 5px 10px;
                     font-size: 14px;
                 }
             }
@@ -1711,10 +1780,13 @@ table {
 
     .superAdmin-page__activity {
         padding: 30px;
-        margin: 20px 0;
 
         .table-title {
             font-size: 25px;
+        }
+
+        .table-container {
+            height: 270px;
         }
     }
 
@@ -1840,6 +1912,19 @@ table {
                     .unitButton {
                         width: 75%;
                     }
+
+                    .repairment-image {
+                        width: 75%;
+
+                        img {
+                            width: 50%;
+                            height: 50%;
+                        }
+                    }
+
+                    .repair-image-btn {
+                        width: 70%;
+                    }
                 }
             }
         }
@@ -1901,6 +1986,11 @@ table {
                             width: 100%;
                             font-size: 17px;
                         }
+
+                        textarea {
+                            width: 100%;
+                            font-size: 17px;
+                        }
                     }
 
                     input {
@@ -1917,6 +2007,15 @@ table {
                     select {
                         width: 75%;
                         font-size: 17px;
+                    }
+
+                    .repairment-image {
+                        width: 75%;
+
+                        img {
+                            width: 50%;
+                            height: 50%;
+                        }
                     }
 
                     .unitButton {

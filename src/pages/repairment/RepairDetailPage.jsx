@@ -1,43 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Table, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Image } from 'react-bootstrap';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
+import RepairHistory from '../../components/tables/RepairHistory';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { MdEdit, MdSave, MdDelete, MdUpload } from 'react-icons/md';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
 import { FaRegCircleCheck } from 'react-icons/fa6';
-import { getRepair } from '../../api/repairmentAPI';
+import {
+  getRepairment,
+  updateRepairment,
+  deleteRepairment,
+  finishRepairment,
+  getRepairHistory,
+} from '../../api/repairmentAPI';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function RepairDetailPage() {
+  const [repairHistory, setRepairHistory] = useState([]);
+  const [imagePreview, setImagePreview] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
+
   const navigate = useNavigate();
   const { id } = useParams();
-  const [repairment, setRepairment] = useState({
-    number: '',
-    type: '',
-    age: '',
-    location: '',
-    remark: '',
-  });
 
   useEffect(() => {
     const fetchRepair = async () => {
-      const data = await getRepair(id);
-      const repair = data.repair;
-      setRepairment({
-        number: repair.container.number,
-        type: repair.container.type,
-        age: repair.container.age,
-        location: repair.container.location,
-        remark: repair.remarks,
-      });
+      const data = await getRepairment(id);
+      formik.setValues(data.repair);
+    };
+
+    const fetchRepairmentHistory = async () => {
+      const data = await getRepairHistory(id);
+      setRepairHistory(data.history);
     };
 
     fetchRepair();
+    fetchRepairmentHistory();
   }, [id]);
 
   const handleGoBack = () => {
@@ -48,33 +52,74 @@ function RepairDetailPage() {
     setIsEditing(true);
   };
 
-  const handleUpdateData = () => {
-    setIsEditing(false);
-    NotifToast('Data successfully saved!', 'success');
-  };
+  const formik = useFormik({
+    initialValues: {
+      number: '',
+      type: '',
+      age: '',
+      location: '',
+      remarks: '',
+      image: '',
+    },
+    validationSchema: Yup.object({
+      remarks: Yup.string(),
+    }),
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append('number', values['number']);
+      formData.append('remarks', values['remarks']);
+      formData.append('image', values['image']);
 
-  const handleDeleteData = () => {
-    setShowDeleteModal(false);
-    NotifToast('Data successfully deleted!', 'success');
-    setTimeout(() => {
-      navigate('/repairments');
-    }, 1000);
+      const { error, data } = await updateRepairment(id, formData);
+      if (!error) {
+        setIsEditing(false);
+        NotifToast(data, 'success');
+      } else {
+        NotifToast(data, 'error');
+      }
+    },
+  });
+
+  const handleDeleteData = async () => {
+    const { error, data } = await deleteRepairment(id);
+
+    if (!error) {
+      setShowDeleteModal(false);
+      NotifToast(data, 'success');
+      setTimeout(() => {
+        navigate('/repairments');
+      }, 1000);
+    } else {
+      NotifToast(data, 'error');
+    }
   };
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
   };
 
-  const handleFinishRepair = () => {
-    setShowFinishModal(false);
-    NotifToast('Repair finished!', 'success');
-    setTimeout(() => {
-      navigate('/repairments');
-    }, 1000);
+  const handleFinishRepair = async () => {
+    const { error, data } = await finishRepairment(id);
+
+    if (!error) {
+      setShowFinishModal(false);
+      NotifToast(data, 'success');
+      setTimeout(() => {
+        navigate('/repairments');
+      }, 1000);
+    } else {
+      NotifToast(data, 'error');
+    }
   };
 
   const handleCloseFinishModal = () => {
     setShowFinishModal(false);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    formik.setFieldValue('image', file);
+    setImagePreview(URL.createObjectURL(file));
   };
 
   return (
@@ -95,7 +140,10 @@ function RepairDetailPage() {
                   <TableTitle>Repair Detail</TableTitle>
                 </Container>
                 {isEditing ? (
-                  <Button onClick={handleUpdateData} className="add-button m-0">
+                  <Button
+                    onClick={formik.handleSubmit}
+                    className="add-button m-0"
+                  >
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>
@@ -129,41 +177,82 @@ function RepairDetailPage() {
               </Container>
               <hr />
               <Form>
-                <fieldset disabled={!isEditing}>
+                <fieldset disabled>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="contNumber">Number</Form.Label>
-                    <Form.Control id="contNumber" value={repairment.number} />
-                  </Form.Group>
-                  <Form.Group className="form-group">
-                    <Form.Label htmlFor="contType">Type</Form.Label>
-                    <Form.Control id="contType" value={repairment.type} />
-                  </Form.Group>
-                  <Form.Group className="form-group">
-                    <Form.Label htmlFor="contAge">Age</Form.Label>
-                    <Form.Control id="contAge" value={repairment.age} />
-                  </Form.Group>
-                  <Form.Group className="form-group">
-                    <Form.Label htmlFor="contLocation">Location</Form.Label>
+                    <Form.Label htmlFor="number">Number</Form.Label>
                     <Form.Control
-                      id="contLocation"
-                      value={repairment.location}
+                      id="number"
+                      name="number"
+                      defaultValue={formik.values.number || ''}
+                    />
+                  </Form.Group>
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="type">Type</Form.Label>
+                    <Form.Control
+                      id="type"
+                      name="type"
+                      defaultValue={formik.values.type || ''}
+                    />
+                  </Form.Group>
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="age">Age</Form.Label>
+                    <Form.Control
+                      id="age"
+                      name="age"
+                      defaultValue={formik.values.age || ''}
+                    />
+                  </Form.Group>
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="location">Location</Form.Label>
+                    <Form.Control
+                      id="location"
+                      name="location"
+                      defaultValue={formik.values.location || ''}
                     />
                   </Form.Group>
                 </fieldset>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="remark">Remark</Form.Label>
+                  <Form.Label htmlFor="remarks">Remark</Form.Label>
                   <Form.Control
                     disabled={!isEditing}
                     as="textarea"
-                    id="remark"
-                    value={repairment.remark}
+                    id="remarks"
+                    name="remarks"
+                    onChange={formik.handleChange}
+                    value={formik.values.remarks}
                   />
                 </Form.Group>
+                {(formik.values.image || imagePreview) && (
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="image">Image</Form.Label>
+                    <div className="repairment-image">
+                      <Image
+                        src={imagePreview ? imagePreview : formik.values.image}
+                        fluid
+                      />
+                    </div>
+                  </Form.Group>
+                )}
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="Attachment">Attachment</Form.Label>
-                  <div className="unitButton">
-                    <Button disabled={!isEditing} className="add-button">
-                      <MdUpload className="me-1" />
+                  <div className="repair-image-btn">
+                    <Form.Control
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      style={{ display: 'none' }}
+                      id="repairment_image_upload"
+                    />
+                    <Button
+                      disabled={!isEditing}
+                      className="add-button"
+                      onClick={() =>
+                        document
+                          .getElementById('repairment_image_upload')
+                          .click()
+                      }
+                    >
+                      <MdUpload className="me-1 ms-0" />
                       <span>Upload Image</span>
                     </Button>
                   </div>
@@ -187,46 +276,7 @@ function RepairDetailPage() {
             </Container>
           </Col>
           <Col className="p-0" xs={12} md={6}>
-            <Container fluid className="contDetail-page__table">
-              <TableTitle>History</TableTitle>
-              <hr />
-              <Table responsive className="mt-3 border">
-                <thead className="table-primary">
-                  <tr>
-                    <th>Date</th>
-                    <th>Book Number</th>
-                    <th>Booked By</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Book Number 1</td>
-                    <td>Booked By 1</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>Book Number 2</td>
-                    <td>Booked By 2</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>Book Number 3</td>
-                    <td>Booked By 3</td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>Book Number 4</td>
-                    <td>Booked By 4</td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td>Book Number 5</td>
-                    <td>Booked By 5</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Container>
+            <RepairHistory repairHistory={repairHistory} />
           </Col>
         </Row>
       </Container>

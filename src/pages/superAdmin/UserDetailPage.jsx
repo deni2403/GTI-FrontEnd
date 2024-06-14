@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col, Image, Button, Form } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
@@ -12,11 +13,18 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 function UserDetailPage() {
+  const { user } = useSelector((state) => state.auth);
   const [imagePreview, setImagePreview] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
+
+  useEffect(() => {
+    if (user.role !== 'Super Admin') {
+      navigate('/dashboard');
+    }
+  }, [user.role, navigate]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -42,16 +50,14 @@ function UserDetailPage() {
       location: '',
       email: '',
       password: '',
-      image: null,
+      image: '',
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Name is required'),
       email: Yup.string()
         .email('Invalid email format')
         .required('Email is required'),
-      password: Yup.string()
-        .min(6, 'Must be at least 6 characters')
-        .required('Required'),
+      password: Yup.string().min(6, 'Must be at least 6 characters'),
       role: Yup.string().required('Role is required'),
       location: Yup.string().required('Location is required'),
     }),

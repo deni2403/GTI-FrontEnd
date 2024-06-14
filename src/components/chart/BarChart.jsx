@@ -16,6 +16,16 @@ function BarChart({ initialData }) {
       options={{
         responsive: true,
         maintainAspectRatio: false, // Atur ke false agar tidak menjaga rasio aspek
+        scales: {
+          y: {
+            ticks: {
+              stepSize: 1,
+              callback: function (value) {
+                return Number.isInteger(value) ? value : null; // Menampilkan hanya nilai integer
+              },
+            },
+          },
+        },
         plugins: {
           datalabels: {
             display: false,

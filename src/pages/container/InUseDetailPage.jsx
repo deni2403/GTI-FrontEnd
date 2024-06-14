@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Table, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
+import ContainerHistory from '../../components/tables/ContainerHistory';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { getContainer, getContainerHistory } from '../../api/containerAPI';
 
+
 function InUseDetailPage() {
   const [container, setContainer] = useState({
-    container_number: '',
+    number: '',
+    shipment_number: '',
+    shipper: '',
     type: '',
     status: '',
     age: '',
-    iddle_days: '',
     location: '',
   });
   const [containerHistory, setContainerHistory] = useState([]);
@@ -59,37 +62,59 @@ function InUseDetailPage() {
               <Form>
                 <fieldset disabled>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="contNumber">Number</Form.Label>
-                    <Form.Control id="contNumber" value={container.number} />
+                    <Form.Label htmlFor="number">Number</Form.Label>
+                    <Form.Control
+                      id="number"
+                      name="number"
+                      defaultValue={container.number || ''}
+                    />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="bookNumber">Book Num</Form.Label>
                     <Form.Control
                       id="bookNumber"
-                      value={container.bookNumber}
+                      name="bookNumber"
+                      defaultValue={container.shipment_number || ''}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="bookedBy">Booked By</Form.Label>
-                    <Form.Control id="bookedBy" value={container.bookedBy} />
+                    <Form.Label htmlFor="shipper">Shipper</Form.Label>
+                    <Form.Control
+                      id="shipper"
+                      name="shipper"
+                      defaultValue={container.shipper || ''}
+                    />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="contType">Type</Form.Label>
-                    <Form.Control id="contType" value={container.type} />
+                    <Form.Label htmlFor="type">Type</Form.Label>
+                    <Form.Control
+                      id="type"
+                      name="type"
+                      defaultValue={container.type || ''}
+                    />
                   </Form.Group>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="status">Status</Form.Label>
-                    <Form.Control id="status" value={container.status} />
-                  </Form.Group>
-                  <Form.Group className="form-group">
-                    <Form.Label htmlFor="contAge">Age</Form.Label>
-                    <Form.Control id="contAge" value={container.age} />
-                  </Form.Group>
-                  <Form.Group className="form-group">
-                    <Form.Label htmlFor="contLocation">Location</Form.Label>
                     <Form.Control
-                      id="contLocation"
-                      value={container.location}
+                      id="status"
+                      name="status"
+                      defaultValue={container.status || ''}
+                    />
+                  </Form.Group>
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="age">Age</Form.Label>
+                    <Form.Control
+                      id="age"
+                      name="age"
+                      defaultValue={container.age}
+                    />
+                  </Form.Group>
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="location">Location</Form.Label>
+                    <Form.Control
+                      id="location"
+                      name="location"
+                      defaultValue={container.location || ''}
                     />
                   </Form.Group>
                 </fieldset>
@@ -97,29 +122,7 @@ function InUseDetailPage() {
             </Container>
           </Col>
           <Col className="p-0" xs={12} md={6}>
-            <Container fluid className="contDetail-page__table">
-              <TableTitle>History</TableTitle>
-              <hr />
-              <Table responsive className="mt-3 border">
-                <thead className="table-primary">
-                  <tr>
-                    <th>Date</th>
-                    <th>Book Number</th>
-                    <th>Booked By</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {containerHistory &&
-                    containerHistory.map((history) => (
-                      <tr key={history.number}>
-                        <td></td>
-                        <td>{history.number}</td>
-                        <td></td>
-                      </tr>
-                    ))}
-                </tbody>
-              </Table>
-            </Container>
+            <ContainerHistory containerHistory={containerHistory} />
           </Col>
         </Row>
       </Container>

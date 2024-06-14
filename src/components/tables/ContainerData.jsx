@@ -1,33 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Table, Container } from 'react-bootstrap';
 import { BsInfoCircle } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
-import { getAllContainers } from '../../api/containerAPI';
-import ReactPaginate from 'react-paginate';
+import PropTypes from 'prop-types';
 
-function ContainerData() {
-  const [containers, setContainers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-
-  useEffect(() => {
-    const fetchContainers = async () => {
-      const data = await getAllContainers(currentPage + 1);
-      setContainers(data.containers);
-      setTotalPages(data.totalPage);
-    };
-
-    fetchContainers();
-  }, [currentPage]);
-
-  const onPageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
-
+function ContainerData({ containers }) {
   return (
-    <>
-      <Container className="table-container">
-        {containers.length === 0 && <h2>No containers found</h2>}
+    <Container className="table-container">
+      {containers.length === 0 ? (
+        <div className="h-100 d-flex align-items-center justify-content-center">
+          <h3 className="">No containers found</h3>
+        </div>
+      ) : (
         <Table striped responsive className="border mt-1">
           <thead>
             <tr>
@@ -63,24 +47,13 @@ function ContainerData() {
               ))}
           </tbody>
         </Table>
-      </Container>
-      <ReactPaginate
-        previousLabel={'<'}
-        nextLabel={'>'}
-        breakLabel={'...'}
-        pageCount={totalPages}
-        onPageChange={onPageChange}
-        breakLinkClassName={'page-link'}
-        breakClassName={'page-item'}
-        containerClassName={'pagination justify-content-center'}
-        pageLinkClassName={'page-link'}
-        previousLinkClassName={'page-link'}
-        nextLinkClassName={'page-link'}
-        activeLinkClassName={'page-item active'}
-        disabledLinkClassName={'page-item disabled'}
-      />
-    </>
+      )}
+    </Container>
   );
 }
+
+ContainerData.propTypes = {
+  containers: PropTypes.array,
+};
 
 export default ContainerData;

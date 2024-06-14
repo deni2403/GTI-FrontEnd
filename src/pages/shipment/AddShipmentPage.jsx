@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
@@ -8,23 +9,25 @@ import NotifToast from '../../utils/NotifiactionToast';
 import DatePicker from 'react-datepicker';
 import { getContainersReady } from '../../api/containerAPI';
 import { addShipment } from '../../api/shipmentAPI';
+import { handleDateFormat } from '../../utils/Utility';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 function AddShipmentPage() {
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
-  const [containerData, setContainerData] = useState({
-    number: '',
-    container_number: '',
-    shipper: '',
-    stuffing_date: '',
-    POL: '',
-    POD: '',
-    ETD: '',
-    ETA: '',
-    status: '',
-  });
   const [contReady, setContReady] = useState([]);
   const [totalUnit, setTotalUnit] = useState(1);
-  const [selectedUnits, setSelectedUnits] = useState({});
+  const [selectedUnits, setSelectedUnits] = useState([]);
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  useEffect(() => {
+    if (user.role === 'Operasional') {
+      navigate('/dashboard');
+    }
+  }, [user.role, navigate]);
 
   useEffect(() => {
     const fetchContainersReady = async () => {
@@ -35,50 +38,68 @@ function AddShipmentPage() {
     fetchContainersReady();
   }, []);
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
+  const formik = useFormik({
+    initialValues: {
+      number: '',
+      container_number: [],
+      shipper: '',
+      stuffing_date: '',
+      POL: '',
+      POD: '',
+      ETD: '',
+      ETA: '',
+      status: '',
+      remark_description: '',
+    },
+    validationSchema: Yup.object({
+      number: Yup.string().required('Book Number is required'),
+      shipper: Yup.string().required('Shipper is required'),
+      stuffing_date: Yup.date().required('Stuffing Date is required'),
+      POL: Yup.string().required('Port Of Loading is required'),
+      POD: Yup.string().required('Port Of Discharge is required'),
+      ETD: Yup.date().required('ETD is required'),
+      ETA: Yup.date().required('ETA is required'),
+      status: Yup.string().required('Status is required'),
+    }),
+    onSubmit: async (values) => {
+      const { error, data } = await addShipment({
+        ...values,
+        container_number: selectedUnits,
+      });
 
-  const handleAddData = async (e) => {
-    e.preventDefault();
-
-    console.log(containerData);
-    const { error, data } = await addShipment(containerData);
-
-    if (!error) {
-      navigate('/shipments');
-      NotifToast(data, 'success');
-    } else {
-      NotifToast('Failed Add Shipments', 'error');
-    }
-  };
+      if (!error) {
+        navigate('/shipments');
+        NotifToast(data, 'success');
+      } else {
+        NotifToast(data, 'error');
+      }
+    },
+  });
 
   const handleIncrementTotalUnit = () => {
     if (totalUnit < contReady.length) {
-      setTotalUnit(totalUnit + 1);
+      setTotalUnit((prevState) => prevState + 1);
     }
   };
 
   const handleDecrementTotalUnit = () => {
     if (totalUnit > 1) {
-      setTotalUnit(totalUnit - 1);
+      setTotalUnit((prevState) => prevState - 1);
     }
   };
 
   const handleSelectUnit = (index, value) => {
-    setSelectedUnits((prevSelectedUnits) => {
-      const newSelectedUnits = { ...prevSelectedUnits, [index]: value };
-      const containerNumbers = Object.values(newSelectedUnits).join(', ');
-      setContainerData((prevData) => ({
-        ...prevData,
-        container_number: containerNumbers,
-      }));
+    setSelectedUnits((prevState) => {
+      const newSelectedUnits = [...prevState];
+      newSelectedUnits[index] = value;
       return newSelectedUnits;
     });
+
+    formik.setFieldValue('container_number', [...selectedUnits, value]);
   };
 
   const getDisabledUnits = () => {
-    return Object.values(selectedUnits);
+    return selectedUnits;
   };
 
   return (
@@ -93,21 +114,23 @@ function AddShipmentPage() {
             <Container fluid className="create-page__container">
               <TableTitle>Add New Shipment</TableTitle>
               <hr />
-              <Form onSubmit={handleAddData}>
+              <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="bookNumber">Book Number</Form.Label>
-                  <Form.Control
-                    name="bookNumber"
-                    id="bookNumber"
-                    type="text"
-                    value={containerData.number}
-                    onChange={(e) =>
-                      setContainerData({
-                        ...containerData,
-                        number: e.target.value,
-                      })
-                    }
-                  />
+                  <Form.Label htmlFor="number">Book Number</Form.Label>
+                  <div className="feedback-wrapper">
+                    <Form.Control
+                      name="number"
+                      id="number"
+                      type="text"
+                      value={formik.values.number}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.number && formik.errors.number}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.number}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="totalUnit">Total Unit</Form.Label>
@@ -140,10 +163,10 @@ function AddShipmentPage() {
                           : `Unit Number ${index + 1}`}
                       </Form.Label>
                       <Form.Select
+                        id={`unitNumber${index + 1}`}
                         onChange={(e) =>
                           handleSelectUnit(index, e.target.value)
                         }
-                        value={selectedUnits[index] || ''}
                       >
                         <option hidden>Select Unit</option>
                         {contReady &&
@@ -164,127 +187,169 @@ function AddShipmentPage() {
                 ))}
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="shipper">Shipper</Form.Label>
-                  <Form.Control
-                    id="shipper"
-                    name="shipper"
-                    type="text"
-                    value={containerData.shipper}
-                    onChange={(e) =>
-                      setContainerData({
-                        ...containerData,
-                        shipper: e.target.value,
-                      })
-                    }
-                  />
+                  <div className="feedback-wrapper">
+                    <Form.Control
+                      id="shipper"
+                      name="shipper"
+                      type="text"
+                      value={formik.values.shipper}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.shipper && formik.errors.shipper
+                      }
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.shipper}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="stuffDate">Stuffing Date</Form.Label>
-                  <DatePicker
-                    className="form-control ms-auto"
-                    wrapperClassName="datePicker"
-                    id="stuffDate"
-                    name="stuffDate"
-                    selected={containerData.stuffing_date}
-                    onChange={(date) =>
-                      setContainerData({
-                        ...containerData,
-                        stuffing_date: date,
-                      })
-                    }
-                    dateFormat={'dd/MM/yyyy'}
-                  />
+                  <Form.Label htmlFor="stuffing_date">Stuffing Date</Form.Label>
+                  <div className="feedback-wrapper">
+                    <DatePicker
+                      className="form-control ms-auto"
+                      wrapperClassName="datePicker"
+                      id="stuffing_date"
+                      name="stuffing_date"
+                      selected={formik.values.stuffing_date || new Date()}
+                      onChange={(date) =>
+                        formik.setFieldValue(
+                          'stuffing_date',
+                          handleDateFormat(date),
+                        )
+                      }
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.stuffing_date &&
+                        formik.errors.stuffing_date
+                      }
+                      dateFormat={'dd/MM/yyyy'}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.stuffing_date}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="pol">Port Of Loading</Form.Label>
-                  <Form.Control
-                    id="pol"
-                    name="pol"
-                    value={containerData.POL}
-                    onChange={(e) =>
-                      setContainerData({
-                        ...containerData,
-                        POL: e.target.value,
-                      })
-                    }
-                    type="text"
-                  />
+                  <Form.Label htmlFor="POL">Port Of Loading</Form.Label>
+                  <div className="feedback-wrapper">
+                    <Form.Control
+                      id="POL"
+                      name="POL"
+                      type="text"
+                      value={formik.values.POL}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.POL && formik.errors.POL}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.POL}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="pod">Port Of Discharge</Form.Label>
-                  <Form.Control
-                    id="pod"
-                    name="pod"
-                    value={containerData.POD}
-                    onChange={(e) =>
-                      setContainerData({
-                        ...containerData,
-                        POD: e.target.value,
-                      })
-                    }
-                    type="text"
-                  />
+                  <Form.Label htmlFor="POD">Port Of Discharge</Form.Label>
+                  <div className="feedback-wrapper">
+                    <Form.Control
+                      id="POD"
+                      name="POD"
+                      type="text"
+                      value={formik.values.POD}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.POD && formik.errors.POD}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.POD}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="etd">ETD</Form.Label>
-                  <DatePicker
-                    className="form-control ms-auto"
-                    wrapperClassName="datePicker"
-                    id="etd"
-                    selected={containerData.ETD}
-                    onChange={(date) =>
-                      setContainerData({
-                        ...containerData,
-                        ETD: date,
-                      })
-                    }
-                    dateFormat={'dd/MM/yyyy'}
-                  />
+                  <Form.Label htmlFor="ETD">ETD</Form.Label>
+                  <div className="feedback-wrapper">
+                    <DatePicker
+                      className="form-control ms-auto"
+                      wrapperClassName="datePicker"
+                      id="ETD"
+                      name="ETD"
+                      selected={formik.values.ETD || new Date()}
+                      onChange={(date) =>
+                        formik.setFieldValue('ETD', handleDateFormat(date))
+                      }
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.ETD && formik.errors.ETD}
+                      dateFormat={'dd/MM/yyyy'}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.ETD}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="eta">ETA</Form.Label>
-                  <DatePicker
-                    className="form-control ms-auto"
-                    wrapperClassName="datePicker"
-                    id="eta"
-                    selected={containerData.ETA}
-                    onChange={(date) =>
-                      setContainerData({
-                        ...containerData,
-                        ETA: date,
-                      })
-                    }
-                    dateFormat={'dd/MM/yyyy'}
-                  />
+                  <Form.Label htmlFor="ETA">ETA</Form.Label>
+                  <div className="feedback-wrapper">
+                    <DatePicker
+                      className="form-control ms-auto"
+                      wrapperClassName="datePicker"
+                      id="ETA"
+                      name="ETA"
+                      selected={formik.values.ETA || new Date()}
+                      onChange={(date) =>
+                        formik.setFieldValue('ETA', handleDateFormat(date))
+                      }
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.ETA && formik.errors.ETA}
+                      dateFormat={'dd/MM/yyyy'}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.ETA}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="status">Status</Form.Label>
-                  <Form.Select
-                    id="status"
-                    name="status"
-                    value={containerData.status}
-                    onChange={(e) =>
-                      setContainerData({
-                        ...containerData,
-                        status: e.target.value,
-                      })
-                    }
-                  >
-                    <option hidden>Select Status</option>
-                    <option value="Arrive">Arrive</option>
-                    <option value="Depature">Depature</option>
-                    <option value="Pickup">Pickup</option>
-                    <option value="Return">Return</option>
-                    <option value="Gate in">Gate in</option>
-                    <option value="Accident">Accident</option>
-                  </Form.Select>
+                  <div className="feedback-wrapper">
+                    <Form.Select
+                      id="status"
+                      name="status"
+                      value={formik.values.status}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.status && formik.errors.status}
+                    >
+                      <option hidden>Select Status</option>
+                      <option value="Arrive">Arrive</option>
+                      <option value="Depature">Depature</option>
+                      <option value="Pickup">Pickup</option>
+                      <option value="Return">Return</option>
+                      <option value="Gate in">Gate in</option>
+                      <option value="Accident">Accident</option>
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.status}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
-                {(containerData.status === 'Pickup' ||
-                  containerData.status === 'Accident') && (
+                {(formik.values.status === 'Pickup' ||
+                  formik.values.status === 'Accident') && (
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="remarkDesc">
+                    <Form.Label htmlFor="remark_description">
                       Remark Description
                     </Form.Label>
-                    <Form.Control as="textarea" id="remarkDesc" type="text" />
+                    <Form.Control
+                      as="textarea"
+                      id="remark_description"
+                      name="remark_description"
+                      type="text"
+                      value={formik.values.remark_description}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.remark_description &&
+                        formik.errors.remark_description
+                      }
+                    />
                   </Form.Group>
                 )}
                 <Container className="d-flex justify-content-end mt-3">

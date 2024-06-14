@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+
 const date = new Date();
 
 export const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -27,4 +29,20 @@ export const showFormattedDate = (date) => {
     day: 'numeric',
   };
   return new Date(date).toLocaleDateString('id-ID', options);
+};
+
+export const handleDateFormat = (date) => {
+  const formattedDate = format(new Date(date), 'yyyy-MM-dd');
+  return formattedDate;
+};
+
+export const downloadBlob = (blob, filename) => {
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(url);
 };
