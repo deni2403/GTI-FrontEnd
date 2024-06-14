@@ -7,8 +7,5 @@ export default defineConfig({
   plugins: [react(), compression()],
   build: {
     chunkSizeWarningLimit: 1024,
-    rollupOptions: {
-      external: ['axios'],
-    },
   },
 });
