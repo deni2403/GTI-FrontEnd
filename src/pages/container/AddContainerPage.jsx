@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
@@ -10,10 +11,20 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 function AddContainerPage() {
+  const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const [otherLocation, setOtherLocation] = useState('');
+  const [showOtherLocation, setShowOtherLocation] = useState(false);
+
   const handleGoBack = () => {
     navigate(-1);
   };
+
+  useEffect(() => {
+    if (user.role === 'Operasional') {
+      navigate('/dashboard');
+    }
+  }, [user.role, navigate]);
 
   const formik = useFormik({
     initialValues: {
@@ -31,16 +42,30 @@ function AddContainerPage() {
       location: Yup.string().required('Location is required'),
     }),
     onSubmit: async (values) => {
+      if (values.location === 'Others') {
+        values.location = otherLocation;
+      }
+
       const { error, data } = await addContainer(values);
 
       if (!error) {
         navigate('/containers');
         NotifToast(data, 'success');
       } else {
-        NotifToast('Failed to add container.', 'error');
+        NotifToast(data, 'error');
       }
     },
   });
+
+  const handleLocationChange = (e) => {
+    const { value } = e.target;
+    formik.handleChange(e);
+    if (value === 'Others') {
+      setShowOtherLocation(true);
+    } else {
+      setShowOtherLocation(false);
+    }
+  };
 
   return (
     <Container fluid className="content-wrapper">
@@ -57,70 +82,113 @@ function AddContainerPage() {
               <Form onSubmit={formik.handleSubmit}>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="number">Container Number</Form.Label>
-                  <Form.Control
-                    id="number"
-                    name="number"
-                    type="text"
-                    value={formik.values.number}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={formik.touched.number && formik.errors.number}
-                  />
+                  <div className="feedback-wrapper">
+                    <Form.Control
+                      id="number"
+                      name="number"
+                      type="text"
+                      value={formik.values.number}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.number && formik.errors.number}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.number}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="type">Type</Form.Label>
-                  <Form.Select
-                    id="type"
-                    name="type"
-                    value={formik.values.type}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={formik.touched.type && formik.errors.type}
-                  >
-                    <option hidden>Select Type</option>
-                    <option value="20 feet">20 feet</option>
-                    <option value="40 feet">40 feet</option>
-                  </Form.Select>
+                  <div className="feedback-wrapper">
+                    <Form.Select
+                      id="type"
+                      name="type"
+                      value={formik.values.type}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.type && formik.errors.type}
+                    >
+                      <option hidden>Select Type</option>
+                      <option value="20 feet">20 feet</option>
+                      <option value="40 feet">40 feet</option>
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.type}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="age">Age</Form.Label>
-                  <Form.Control
-                    id="age"
-                    name="age"
-                    value={formik.values.age}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={formik.touched.age && formik.errors.age}
-                  />
+                  <div className="feedback-wrapper">
+                    <Form.Control
+                      id="age"
+                      name="age"
+                      value={formik.values.age}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.age && formik.errors.age}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.age}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="iddle_days">Iddle Days</Form.Label>
-                  <Form.Control
-                    id="iddle_days"
-                    name="iddle_days"
-                    value={formik.values.iddle_days}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={formik.touched.iddle_days && formik.errors.iddle_days}
-                  />
+                  <div className="feedback-wrapper">
+                    <Form.Control
+                      id="iddle_days"
+                      name="iddle_days"
+                      value={formik.values.iddle_days}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.iddle_days && formik.errors.iddle_days
+                      }
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.iddle_days}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="location">Location</Form.Label>
-                  <Form.Select
-                    id="location"
-                    name="location"
-                    value={formik.values.location}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    isInvalid={formik.touched.location && formik.errors.location}
-                  >
-                    <option hidden>Select Location</option>
-                    <option value="Jakarta">Jakarta</option>
-                    <option value="Makassar">Makassar</option>
-                    <option value="Medan">Medan</option>
-                    <option value="Surabaya">Surabaya</option>
-                  </Form.Select>
+                  <div className="feedback-wrapper">
+                    <Form.Select
+                      id="location"
+                      name="location"
+                      value={formik.values.location}
+                      onChange={handleLocationChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.location && formik.errors.location
+                      }
+                    >
+                      <option hidden>Select Location</option>
+                      <option value="Jakarta">Jakarta</option>
+                      <option value="Makassar">Makassar</option>
+                      <option value="Medan">Medan</option>
+                      <option value="Surabaya">Surabaya</option>
+                      <option value="Others">Others</option>
+                    </Form.Select>
+                    <Form.Control.Feedback type="invalid">
+                      {formik.errors.location}
+                    </Form.Control.Feedback>
+                  </div>
                 </Form.Group>
+                {showOtherLocation && (
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="otherLocation">
+                      Others Location
+                    </Form.Label>
+                    <Form.Control
+                      id="otherLocation"
+                      name="otherLocation"
+                      value={otherLocation}
+                      onChange={(e) => setOtherLocation(e.target.value)}
+                    />
+                  </Form.Group>
+                )}
                 <Container className="d-flex justify-content-end mt-3">
                   <Button type="submit" className="save-button">
                     <MdSave className="me-1" />

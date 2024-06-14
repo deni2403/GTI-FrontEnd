@@ -20,6 +20,7 @@ import SuperAdminPage from './pages/superAdmin/SuperAdminPage';
 import AddUserPage from './pages/superAdmin/AddUserPage';
 import UserDetailPage from './pages/superAdmin/UserDetailPage';
 import ProtectedRoute from './features/auth/protectedRoute';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -75,6 +76,7 @@ function App() {
                     path="/superadmin/users/detail/:id"
                     element={<UserDetailPage />}
                   />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
                 <ToastContainer />
               </Container>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col, Image, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
@@ -10,12 +11,19 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 function AddUserPage() {
+  const { user } = useSelector((state) => state.auth);
   const [imagePreview, setImagePreview] = useState('/user_profile.jpg');
   const navigate = useNavigate();
 
   const handleGoBack = () => {
     navigate(-1);
   };
+
+  useEffect(() => {
+    if (user.role !== 'Super Admin') {
+      navigate('/dashboard');
+    }
+  }, [user.role, navigate]);
 
   const formik = useFormik({
     initialValues: {
@@ -43,7 +51,6 @@ function AddUserPage() {
         formData.append(key, values[key]);
       }
 
-      console.log('formData', { ...values });
       const { data, error } = await addUser(formData);
 
       if (!error) {

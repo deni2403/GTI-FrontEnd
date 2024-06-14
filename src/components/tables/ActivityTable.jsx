@@ -1,45 +1,42 @@
 import React from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Container } from 'react-bootstrap';
+import { showFormattedDate } from '../../utils/Utility';
+import PropTypes from 'prop-types';
 
-function ActivityTable() {
+function ActivityTable({ logs }) {
   return (
-    <Table responsive className="border mt-2">
-      <thead className="table-primary">
-        <tr>
-          <th>Date</th>
-          <th>User</th>
-          <th>Detail Activity</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>31/03/2024</td>
-          <td>User 1</td>
-          <td>Activity</td>
-        </tr>
-        <tr>
-          <td>31/03/2024</td>
-          <td>User 2</td>
-          <td>Activity</td>
-        </tr>
-        <tr>
-          <td>31/03/2024</td>
-          <td>User 3</td>
-          <td>Activity</td>
-        </tr>
-        <tr>
-          <td>31/03/2024</td>
-          <td>User 4</td>
-          <td>Activity</td>
-        </tr>
-        <tr>
-          <td>31/03/2024</td>
-          <td>User 5</td>
-          <td>Activity</td>
-        </tr>
-      </tbody>
-    </Table>
+    <Container className="table-container">
+      {logs.length !== 0 ? (
+        <Table responsive className="border mt-2">
+          <thead className="table-primary">
+            <tr>
+              <th>Date</th>
+              <th className="w-50">User</th>
+              <th className="text-start">Detail Activity</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs &&
+              logs.map((logs) => (
+                <tr key={logs.id}>
+                  <td>{showFormattedDate(logs.createdAt)}</td>
+                  <td>{logs.user.name}</td>
+                  <td className="text-start">{logs.activity_info}</td>
+                </tr>
+              ))}
+          </tbody>
+        </Table>
+      ) : (
+        <div className="h-100 d-flex align-items-center justify-content-center">
+          <h3 className="">No Logs found</h3>
+        </div>
+      )}
+    </Container>
   );
 }
+
+ActivityTable.propTypes = {
+  logs: PropTypes.array,
+};
 
 export default ActivityTable;

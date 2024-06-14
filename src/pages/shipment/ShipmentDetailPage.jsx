@@ -8,32 +8,38 @@ import { MdEdit, MdSave, MdDelete } from 'react-icons/md';
 import NotifToast from '../../utils/NotifiactionToast';
 import { ToastContainer } from 'react-toastify';
 import DatePicker from 'react-datepicker';
-import { getShipment } from '../../api/shipmentAPI';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import {
+  getShipment,
+  updateShipment,
+  deleteShipment,
+} from '../../api/shipmentAPI';
 import { getContainersReady } from '../../api/containerAPI';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { handleDateFormat } from '../../utils/Utility';
 
 function ShipmentDetailPage() {
+  const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
-  const [dataShipment, setDataShipment] = useState({
-    number: '',
-    container_number: '',
-    shipper: '',
-    stuffing_date: '',
-    POL: '',
-    POD: '',
-    ETD: '',
-    ETA: '',
-    status: '',
-  });
+  const [contReady, setContReady] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [startDate, setStartDate] = useState(new Date());
-  const [totalUnit, setTotalUnit] = useState(1);
-  const [shipmentStatus, setShipmentStatus] = useState('');
-  const navigate = useNavigate();
   const { id } = useParams();
-  const [contReady, setContReady] = useState([]);
-  const [selectedUnits, setSelectedUnits] = useState({});
+  const [totalUnit, setTotalUnit] = useState(1);
+  const [selectedUnits, setSelectedUnits] = useState([]);
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  const handleEditData = () => {
+    setIsEditing(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+  };
 
   useEffect(() => {
     const fetchContainersReady = async () => {
@@ -47,74 +53,96 @@ function ShipmentDetailPage() {
   useEffect(() => {
     const fetchShipment = async () => {
       const data = await getShipment(id);
-      const shipment = data.shipment;
-      setDataShipment({
-        number: shipment.number,
-        container_number: shipment.container.number,
-        shipper: shipment.shipment_detail.shipper,
-        stuffing_date: shipment.shipment_detail.stuffing_date,
-        POL: shipment.shipment_detail.POL,
-        POD: shipment.shipment_detail.POD,
-        ETD: shipment.shipment_detail.ETD,
-        ETA: shipment.shipment_detail.ETA,
-        status: shipment.status,
+      formik.setValues({
+        ...data.shipment,
+        stuffing_date: new Date(data.shipment.stuffing_date),
+        ETD: new Date(data.shipment.ETD),
+        ETA: new Date(data.shipment.ETA),
       });
+      setTotalUnit(data.shipment.container_number.length);
+      setSelectedUnits(data.shipment.container_number);
     };
+
     fetchShipment();
   }, [id]);
 
-  const handleGoBack = () => {
-    navigate(-1);
-  };
+  const formik = useFormik({
+    initialValues: {
+      number: '',
+      container_number: [],
+      shipper: '',
+      stuffing_date: '',
+      POL: '',
+      POD: '',
+      ETD: '',
+      ETA: '',
+      status: '',
+      remark_description: '',
+    },
+    validationSchema: Yup.object({
+      number: Yup.string().required('Book Number is required'),
+      shipper: Yup.string().required('Shipper is required'),
+      stuffing_date: Yup.date().required('Stuffing Date is required'),
+      POL: Yup.string().required('Port Of Loading is required'),
+      POD: Yup.string().required('Port Of Discharge is required'),
+      ETD: Yup.date().required('ETD is required'),
+      ETA: Yup.date().required('ETA is required'),
+      status: Yup.string().required('Status is required'),
+    }),
+    onSubmit: async (values) => {
+      const updatedShipment = {
+        ...values,
+        container_number: selectedUnits,
+      };
 
-  // Add edit, update, and delete data function
-  const handleEditData = () => {
-    setIsEditing(true);
-  };
+      const { error, data } = await updateShipment(id, updatedShipment);
+      if (!error) {
+        setIsEditing(false);
+        NotifToast(data, 'success');
+      } else {
+        NotifToast(data, 'error');
+      }
+    },
+  });
 
-  const handleUpdateData = () => {
-    setIsEditing(false);
-    NotifToast('Data successfully saved!', 'success');
-  };
-
-  const handleDeleteData = (e) => {
+  const handleDeleteData = async (e) => {
     e.preventDefault();
-    setShowDeleteModal(false);
-    NotifToast('Data successfully deleted!', 'success');
-    setTimeout(() => navigate('/shipments'), 1000);
+
+    const { error, data } = await deleteShipment(id);
+
+    if (!error) {
+      setShowDeleteModal(false);
+      NotifToast(data, 'success');
+      setTimeout(() => navigate('/shipments'), 1000);
+    } else {
+      NotifToast(data, 'error');
+    }
   };
 
-  const handleCloseDeleteModal = () => {
-    setShowDeleteModal(false);
-  };
-
-  // Add increment and decrement total unit function
   const handleIncrementTotalUnit = () => {
     if (totalUnit < contReady.length) {
-      setTotalUnit(totalUnit + 1);
+      setTotalUnit((prevState) => prevState + 1);
     }
   };
 
   const handleDecrementTotalUnit = () => {
     if (totalUnit > 1) {
-      setTotalUnit(totalUnit - 1);
+      setTotalUnit((prevState) => prevState - 1);
     }
   };
 
   const handleSelectUnit = (index, value) => {
-    setSelectedUnits((prevSelectedUnits) => {
-      const newSelectedUnits = { ...prevSelectedUnits, [index]: value };
-      const containerNumbers = Object.values(newSelectedUnits).join(', ');
-      setDataShipment((prevData) => ({
-        ...prevData,
-        container_number: containerNumbers,
-      }));
+    setSelectedUnits((prevState) => {
+      const newSelectedUnits = [...prevState];
+      newSelectedUnits[index] = value;
       return newSelectedUnits;
     });
+
+    formik.setFieldValue('container_number', [...selectedUnits, value]);
   };
 
   const getDisabledUnits = () => {
-    return Object.values(selectedUnits);
+    return selectedUnits;
   };
 
   return (
@@ -135,7 +163,10 @@ function ShipmentDetailPage() {
                   <TableTitle>Shipment Detail</TableTitle>
                 </Container>
                 {isEditing ? (
-                  <Button onClick={handleUpdateData} className="add-button m-0">
+                  <Button
+                    onClick={formik.handleSubmit}
+                    className="add-button m-0"
+                  >
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>
@@ -179,7 +210,10 @@ function ShipmentDetailPage() {
                     <Form.Control
                       id="number"
                       name="number"
-                      value={dataShipment.number || ''}
+                      value={formik.values.number || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.number && formik.errors.number}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
@@ -211,11 +245,15 @@ function ShipmentDetailPage() {
                             : `Unit Number ${index + 1}`}
                         </Form.Label>
                         <Form.Select
+                          id={`unitNumber${index + 1}`}
+                          value={selectedUnits[index] || ''}
                           onChange={(e) =>
                             handleSelectUnit(index, e.target.value)
                           }
-                          value={selectedUnits[index] || ''}
                         >
+                          <option value={selectedUnits[index]}>
+                            {selectedUnits[index]}
+                          </option>
                           {contReady &&
                             contReady.map((container) => (
                               <option
@@ -234,66 +272,137 @@ function ShipmentDetailPage() {
                   ))}
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="shipper">Shipper</Form.Label>
-                    <Form.Control id="shipper" value={dataShipment.shipper} />
+                    <Form.Control
+                      id="shipper"
+                      name="shipper"
+                      value={formik.values.shipper || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.shipper && formik.errors.shipper
+                      }
+                    />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="stuffingDate">
+                    <Form.Label htmlFor="stuffing_date">
                       Stuffing Date
                     </Form.Label>
                     <DatePicker
                       className="form-control ms-auto"
                       wrapperClassName="datePicker"
-                      id="stuffingDate"
-                      selected={dataShipment.stuffing_date}
-                      onChange={(date) => setStartDate(date)}
+                      id="stuffing_date"
+                      name="stuffing_date"
+                      selected={formik.values.stuffing_date || new Date()}
+                      onChange={(date) =>
+                        formik.setFieldValue(
+                          'stuffing_date',
+                          handleDateFormat(date),
+                        )
+                      }
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.stuffing_date &&
+                        formik.errors.stuffing_date
+                      }
                       dateFormat={'dd/MM/yyyy'}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="pol">Port of Loading</Form.Label>
-                    <Form.Control id="pol" value={dataShipment.POL} />
+                    <Form.Label htmlFor="POL">Port of Loading</Form.Label>
+                    <Form.Control
+                      id="POL"
+                      name="POL"
+                      value={formik.values.POL || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.POL && formik.errors.POL}
+                    />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="pod">Port of Discharge</Form.Label>
-                    <Form.Control id="pod" value={dataShipment.POD} />
+                    <Form.Label htmlFor="POD">Port of Discharge</Form.Label>
+                    <Form.Control
+                      id="POD"
+                      name="POD"
+                      value={formik.values.POD || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.POD && formik.errors.POD}
+                    />
                   </Form.Group>
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="etd">ETD</Form.Label>
+                    <Form.Label htmlFor="ETD">ETD</Form.Label>
                     <DatePicker
                       className="form-control ms-auto"
                       wrapperClassName="datePicker"
-                      id="etd"
-                      selected={dataShipment.ETD}
-                      onChange={(date) => setStartDate(date)}
+                      id="ETD"
+                      name="ETD"
+                      selected={formik.values.ETD || new Date()}
+                      onChange={(date) =>
+                        formik.setFieldValue('ETD', handleDateFormat(date))
+                      }
+                      onBlur={formik.handleBlur}
+                      isInvalid={formik.touched.ETD && formik.errors.ETD}
                       dateFormat={'dd/MM/yyyy'}
                     />
                   </Form.Group>
+                  <Form.Group className="form-group">
+                    <Form.Label htmlFor="ETA">ETA</Form.Label>
+                    <div className="feedback-wrapper">
+                      <DatePicker
+                        className="form-control ms-auto"
+                        wrapperClassName="datePicker"
+                        id="ETA"
+                        name="ETA"
+                        selected={formik.values.ETA || new Date()}
+                        onChange={(date) =>
+                          formik.setFieldValue('ETA', handleDateFormat(date))
+                        }
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.ETA && formik.errors.ETA}
+                        dateFormat={'dd/MM/yyyy'}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        {formik.errors.ETA}
+                      </Form.Control.Feedback>
+                    </div>
+                  </Form.Group>
                 </fieldset>
                 <Form.Group className="form-group">
-                  <Form.Label htmlFor="Remark">Remark</Form.Label>
+                  <Form.Label htmlFor="status">Status</Form.Label>
                   <Form.Select
+                    id="status"
+                    name="status"
                     disabled={!isEditing}
-                    onChange={(e) => setShipmentStatus(e.target.value)}
+                    value={formik.values.status || ''}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    isInvalid={formik.touched.status && formik.errors.status}
                   >
-                    <option hidden>{dataShipment.status}</option>
-                    <option value="1">Arrive</option>
-                    <option value="2">Depature</option>
-                    <option value="3">Pickup</option>
-                    <option value="4">Return</option>
-                    <option value="5">Gate in</option>
-                    <option value="6">Accident</option>
+                    <option value="Arrive">Arrive</option>
+                    <option value="Departure">Departure</option>
+                    <option value="Pickup">Pickup</option>
+                    <option value="Return">Return</option>
+                    <option value="Gate in">Gate in</option>
+                    <option value="Accident">Accident</option>
                   </Form.Select>
                 </Form.Group>
-                {(shipmentStatus === '3' || shipmentStatus === '6') && (
+                {(formik.values.status === 'Pickup' ||
+                  formik.values.status === 'Accident') && (
                   <Form.Group className="form-group">
-                    <Form.Label htmlFor="remarkDesc">
-                      Remark Description
-                    </Form.Label>
+                    <Form.Label htmlFor="remarkDesc">Remark</Form.Label>
                     <Form.Control
                       as="textarea"
-                      id="remarkDesc"
+                      id="remark_description"
+                      name="remark_description"
                       type="text"
                       disabled={!isEditing}
+                      value={formik.values.remark_description || ''}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      isInvalid={
+                        formik.touched.remark_description &&
+                        formik.errors.remark_description
+                      }
                     />
                   </Form.Group>
                 )}

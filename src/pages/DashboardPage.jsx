@@ -110,7 +110,10 @@ function DashboardPage() {
                       labels: Object.keys(totalShipmentData),
                       datasets: [
                         {
-                          label: `Total Shipment ${new Date().getFullYear()}`,
+                          label: `Total Shipment ${new Date().toLocaleString(
+                            'id-ID',
+                            { month: 'long', year: 'numeric' },
+                          )}`,
                           data: Object.values(totalShipmentData),
                           backgroundColor: [
                             'rgba(255, 99, 132, 0.5)',

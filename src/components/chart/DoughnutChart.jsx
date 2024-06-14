@@ -9,7 +9,23 @@ function DoughnutChart({ initialData }) {
   const [data, setData] = useState(initialData);
 
   useEffect(() => {
-    setData(initialData);
+    const filteredData = {
+      ...initialData,
+      datasets: initialData.datasets.map((dataset) => ({
+        ...dataset,
+        data: dataset.data.filter((value) => value !== 0),
+        backgroundColor: dataset.backgroundColor.filter(
+          (_, index) => dataset.data[index] !== 0,
+        ),
+        borderColor: dataset.borderColor.filter(
+          (_, index) => dataset.data[index] !== 0,
+        ),
+      })),
+      labels: initialData.labels.filter(
+        (_, index) => initialData.datasets[0].data[index] !== 0,
+      ),
+    };
+    setData(filteredData);
   }, [initialData]);
 
   return (

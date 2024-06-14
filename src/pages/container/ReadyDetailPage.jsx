@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Button, Table, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
+import ContainerHistory from '../../components/tables/ContainerHistory';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { MdEdit, MdSave, MdDelete } from 'react-icons/md';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
@@ -68,7 +69,6 @@ function ReadyDetailPage() {
       const { error, data } = await updateContainer(id, values);
 
       if (!error) {
-        navigate('/containers');
         NotifToast(data, 'success');
       } else {
         NotifToast('Failed to update container.', 'error');
@@ -234,26 +234,7 @@ function ReadyDetailPage() {
             </Container>
           </Col>
           <Col className="p-0" xs={12} md={6}>
-            <Container fluid className="contDetail-page__table">
-              <TableTitle>History</TableTitle>
-              <hr />
-              <Table responsive className="mt-3 border">
-                <thead className="table-primary">
-                  <tr>
-                    <th>Date</th>
-                    <th>Book Number</th>
-                    <th>Booked By</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>Book Number 1</td>
-                    <td>Shipper</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Container>
+            <ContainerHistory containerHistory={containerHistory} />
           </Col>
         </Row>
       </Container>
