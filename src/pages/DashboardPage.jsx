@@ -41,13 +41,6 @@ function DashboardPage() {
 
     fetchContainerData();
     fetchShipmentData();
-
-    // // Set interval untuk memperbarui data setiap 5 menit (misalnya)
-    // const intervalId = setInterval(() => {
-    //   fetchData();
-    // }, 300000); // 300000 milidetik = 5 menit
-    // // Membersihkan interval saat komponen di-unmount
-    // return () => clearInterval(intervalId);
   }, []);
 
   return (
@@ -98,7 +91,7 @@ function DashboardPage() {
           </Col>
           <Col lg={6}>
             <Container className="chart_container shadow-sm">
-              <Container fluid className="dashboard-chart">
+              <Container fluid className="dashboard-chart mb-4">
                 <TableTitle>Total Shipment</TableTitle>
                 <Container
                   fluid

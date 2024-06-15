@@ -68,7 +68,7 @@ function ContainerRepair() {
       <Container fluid className="page-container">
         <Row>
           <Col>
-            <Container fluid className="page-container__table shadow-sm">
+            <Container fluid className="page-container__table-repairment shadow-sm">
               <Container>
                 <TableTitle>Container Repair List</TableTitle>
               </Container>

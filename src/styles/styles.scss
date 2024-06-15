@@ -329,7 +329,7 @@ nav {
         max-width: 100%;
 
         a {
-            font-size: 12px;
+            font-size: 11px;
         }
     }
 
@@ -585,15 +585,49 @@ table {
         background-color: var(--bg-white);
         border-radius: 10px;
         padding: 15px 20px;
-        height: 590px;
+        height: 630px;
+        margin-bottom: 20px;
+
+        .table-title {
+            font-size: 18px;
+        }
+
+        .table-container {
+            height: 350px;
+        }
     }
 
-    .table-title {
-        font-size: 18px;
+
+    .page-container__table-shipment {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px 20px;
+        height: 660px;
+        margin-bottom: 20px;
+
+        .table-title {
+            font-size: 18px;
+        }
+
+        .table-container {
+            height: 380px;
+        }
     }
 
-    .table-container {
-        height: 340px;
+    .page-container__table-repairment {
+        background-color: var(--bg-white);
+        border-radius: 10px;
+        padding: 15px 20px;
+        height: 750px;
+        margin-bottom: 20px;
+
+        .table-title {
+            font-size: 18px;
+        }
+
+        .table-container {
+            height: 445px;
+        }
     }
 }
 
@@ -604,14 +638,14 @@ table {
     border-radius: 10px;
     padding: 15px 20px;
     margin: 10px 0;
-    height: 460px;
+    height: 400px;
 
     .table-title {
         font-size: 18px;
     }
 
     .table-container {
-        height: 270px;
+        height: 220px;
     }
 }
 
@@ -619,14 +653,15 @@ table {
     background-color: var(--bg-white);
     border-radius: 10px;
     padding: 15px;
-    margin: 10px 0;
+    margin-bottom: 10px;
+    height: 510px;
 
     .table-title {
         font-size: 18px;
     }
 
     .table-container {
-        height: 270px;
+        height: 320px;
     }
 }
 
@@ -902,7 +937,7 @@ table {
 
 // Login Page
 .login-page {
-    min-height: 100vh;
+    min-height: 100dvh;
     background-color: var(--bg-light);
 
     .login-page__section {
@@ -1118,45 +1153,72 @@ table {
 
     //Shipment, Container Page
     .page-container {
-
         .page-container__table {
             padding: 20px;
             height: 630px;
+
+            .table-title {
+                font-size: 20px;
+            }
+
+            .table-container {
+                height: 365px;
+            }
         }
 
-        .table-title {
-            font-size: 20px;
+        .page-container__table-shipment {
+            padding: 20px;
+            height: 630px;
+
+            .table-title {
+                font-size: 20px;
+            }
+
+            .table-container {
+                height: 365px;
+            }
         }
 
-        .table-container {
-            height: 365px;
+        .page-container__table-repairment {
+            padding: 20px;
+            height: 740px;
+
+            .table-title {
+                font-size: 20px;
+            }
+
+            .table-container {
+                height: 470px;
+            }
         }
+
     }
 
 
     // Super Admin Page
     .superAdmin-page__users {
         padding: 20px 30px;
-        height: 460px;
+        height: 440px;
 
         .table-title {
             font-size: 20px;
         }
 
         .table-container {
-            height: 250px;
+            height: 240px;
         }
     }
 
     .superAdmin-page__activity {
         padding: 20px;
+        height: 520px;
 
         .table-title {
             font-size: 20px;
         }
 
         .table-container {
-            height: 250px;
+            height: 320px;
         }
     }
 
@@ -1751,14 +1813,40 @@ table {
         .page-container__table {
             padding: 30px;
             height: 600px;
+
+            .table-title {
+                font-size: 25px;
+            }
+
+            .table-container {
+                height: 270px;
+            }
         }
 
-        .table-title {
-            font-size: 25px;
+        .page-container__table-shipment {
+            padding: 30px;
+            height: 600px;
+
+            .table-title {
+                font-size: 25px;
+            }
+
+            .table-container {
+                height: 270px;
+            }
         }
 
-        .table-container {
-            height: 270px;
+        .page-container__table-repairment {
+            padding: 30px;
+            height: 600px;
+
+            .table-title {
+                font-size: 25px;
+            }
+
+            .table-container {
+                height: 270px;
+            }
         }
     }
 

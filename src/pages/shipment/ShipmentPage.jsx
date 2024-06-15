@@ -113,7 +113,7 @@ function ShipmentPage() {
       <Container fluid className="page-container">
         <Row>
           <Col>
-            <Container fluid className="page-container__table shadow-sm">
+            <Container fluid className="page-container__table-shipment shadow-sm">
               <Container>
                 <TableTitle>Shipment List</TableTitle>
               </Container>
