@@ -32,9 +32,7 @@ function RepairData({ repairments }) {
                   <td>{repairment.location}</td>
                   <td>{repairment.age}</td>
                   <td>{repairment.remarks}</td>
-                  <td>
-                    {repairment.finish_status ? 'Finished' : 'On Progress'}
-                  </td>
+                  <td>{repairment.repair ? 'Selesai' : 'On Progress'}</td>
                   <td>
                     <Link to={`/repairments/detail/${repairment.uuid}`}>
                       <BsInfoCircle />

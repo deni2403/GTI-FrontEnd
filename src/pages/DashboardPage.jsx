@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col, Container, Spinner } from 'react-bootstrap';
 import TableTitle from '../components/tables/TableTitle';
 import BarChart from '../components/chart/BarChart';
 import DoughnutChart from '../components/chart/DoughnutChart';
@@ -9,6 +9,8 @@ import { getContainersTotal } from '../api/containerAPI';
 import { getShipmentsTotal } from '../api/shipmentAPI';
 
 function DashboardPage() {
+  const [loadingCont, setLoadingCont] = useState(false);
+  const [loadingShip, setLoadingShip] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const [greetings, setGreetings] = useState('');
   const [totalShipmentData, setTotalShipmentData] = useState({});
@@ -19,11 +21,14 @@ function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    setLoadingCont(true);
+    setLoadingShip(true);
     const fetchContainerData = async () => {
       try {
         const response = await getContainersTotal();
         const data = response.data;
         setcontainerStatusData(data);
+        setLoadingCont(false);
       } catch (error) {
         console.error('Error fetching data containers:', error);
       }
@@ -34,6 +39,7 @@ function DashboardPage() {
         const response = await getShipmentsTotal();
         const data = response.data;
         setTotalShipmentData(data);
+        setLoadingShip(false);
       } catch (error) {
         console.error('Error fetching data shipments:', error);
       }
@@ -71,20 +77,33 @@ function DashboardPage() {
                   style={{ width: '100%', height: 280 }}
                   className="border"
                 >
-                  <DoughnutChart
-                    initialData={{
-                      labels: Object.keys(containerStatusData),
-                      datasets: [
-                        {
-                          label: 'Container',
-                          data: Object.values(containerStatusData),
-                          backgroundColor: ['#2E8B57', '#012970', '#E58440'],
-                          borderColor: ['white', 'white', 'white'],
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                  />
+                  {loadingCont ? (
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{ width: '100%', height: '100%' }}
+                    >
+                      <Spinner
+                        animation="border"
+                        variant="primary"
+                        style={{ width: '5rem', height: '5rem' }}
+                      />
+                    </div>
+                  ) : (
+                    <DoughnutChart
+                      initialData={{
+                        labels: Object.keys(containerStatusData),
+                        datasets: [
+                          {
+                            label: 'Container',
+                            data: Object.values(containerStatusData),
+                            backgroundColor: ['#2E8B57', '#012970', '#E58440'],
+                            borderColor: ['white', 'white', 'white'],
+                            borderWidth: 1,
+                          },
+                        ],
+                      }}
+                    />
+                  )}
                 </Container>
               </Container>
             </Container>
@@ -98,33 +117,46 @@ function DashboardPage() {
                   style={{ width: '100%', height: 280 }}
                   className="border"
                 >
-                  <BarChart
-                    initialData={{
-                      labels: Object.keys(totalShipmentData),
-                      datasets: [
-                        {
-                          label: `Total Shipment ${new Date().toLocaleString(
-                            'id-ID',
-                            { month: 'long', year: 'numeric' },
-                          )}`,
-                          data: Object.values(totalShipmentData),
-                          backgroundColor: [
-                            'rgba(255, 99, 132, 0.5)',
-                            'rgba(54, 162, 235, 0.5)',
-                            'rgba(255, 206, 86, 0.5)',
-                            'rgba(75, 192, 192, 0.5)',
-                          ],
-                          borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                          ],
-                          borderWidth: 1,
-                        },
-                      ],
-                    }}
-                  />
+                  {loadingShip ? (
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{ width: '100%', height: '100%' }}
+                    >
+                      <Spinner
+                        animation="border"
+                        variant="primary"
+                        style={{ width: '5rem', height: '5rem' }}
+                      />
+                    </div>
+                  ) : (
+                    <BarChart
+                      initialData={{
+                        labels: Object.keys(totalShipmentData),
+                        datasets: [
+                          {
+                            label: `Total Shipment ${new Date().toLocaleString(
+                              'id-ID',
+                              { month: 'long', year: 'numeric' },
+                            )}`,
+                            data: Object.values(totalShipmentData),
+                            backgroundColor: [
+                              'rgba(255, 99, 132, 0.5)',
+                              'rgba(54, 162, 235, 0.5)',
+                              'rgba(255, 206, 86, 0.5)',
+                              'rgba(75, 192, 192, 0.5)',
+                            ],
+                            borderColor: [
+                              'rgba(255, 99, 132, 1)',
+                              'rgba(54, 162, 235, 1)',
+                              'rgba(255, 206, 86, 1)',
+                              'rgba(75, 192, 192, 1)',
+                            ],
+                            borderWidth: 1,
+                          },
+                        ],
+                      }}
+                    />
+                  )}
                 </Container>
               </Container>
             </Container>
