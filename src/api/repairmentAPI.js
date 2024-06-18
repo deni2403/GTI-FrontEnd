@@ -16,9 +16,11 @@ export const getRepairment = async (id) => {
 export const addRepairment = async (repairData) => {
   try {
     const response = await authorizedApiClient.post('/repairs', repairData);
-    return { error: false, data: 'Repairment Added Successfully' };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Failed to Add Repairment' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
@@ -28,34 +30,40 @@ export const updateRepairment = async (id, repairData) => {
       `/repairs/${id}`,
       repairData,
     );
-    return { error: false, data: 'Repairment Updated Successfully' };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Failed to Update Repairment' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
 export const deleteRepairment = async (id) => {
   try {
     const response = await authorizedApiClient.delete(`/repairs/${id}`);
-    return { error: false, data: 'Repairment Deleted Successfully' };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Failed to Delete Repairment' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
 export const finishRepairment = async (id) => {
   try {
     const response = await authorizedApiClient.put(`/repairs/${id}/finish`);
-    return { error: false, data: 'Repairment Finished Successfully' };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Failed to Finish Repairment' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
 export const getRepairHistory = async (id) => {
   const response = await authorizedApiClient.get(`/repairs/${id}/history`);
   return response.data;
-}
+};
 
 export const exportRepairmentsData = async () => {
   try {

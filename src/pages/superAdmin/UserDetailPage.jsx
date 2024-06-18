@@ -93,7 +93,7 @@ function UserDetailPage() {
         navigate('/superadmin');
       }, 1000);
     } else {
-      NotifToast('Failed Delete User Data', 'error');
+      NotifToast(data, 'error');
     }
   };
 

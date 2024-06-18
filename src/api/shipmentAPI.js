@@ -26,7 +26,8 @@ export const addShipment = async (containerData) => {
     const message = response.data.message;
     return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Failed Add Shipment' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
@@ -35,19 +36,22 @@ export const updateShipment = async (id, shipmentData) => {
     const response = await authorizedApiClient.put(`/shipments/${id}`, {
       ...shipmentData,
     });
-
-    return { error: false, data: 'Shipment Updated Succesfully' };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Update shipment Failed.' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
 export const deleteShipment = async (id) => {
   try {
     const response = await authorizedApiClient.delete(`/shipments/${id}`);
-    return { error: false, data: response.data.message };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Failed to Delete Shipment.' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 

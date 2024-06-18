@@ -57,7 +57,7 @@ function AddUserPage() {
         navigate('/superadmin');
         NotifToast(data, 'success');
       } else {
-        NotifToast('Failed to add user.', 'error');
+        NotifToast(data, 'error');
       }
     },
   });

@@ -69,9 +69,10 @@ function ReadyDetailPage() {
       const { error, data } = await updateContainer(id, values);
 
       if (!error) {
+        setIsEditing(false);
         NotifToast(data, 'success');
       } else {
-        NotifToast('Failed to update container.', 'error');
+        NotifToast(data, 'error');
       }
     },
   });
@@ -88,7 +89,7 @@ function ReadyDetailPage() {
         navigate('/containers');
       }, 1000);
     } else {
-      NotifToast('Failed to delete container data!', 'error');
+      NotifToast(data, 'error');
     }
   };
 

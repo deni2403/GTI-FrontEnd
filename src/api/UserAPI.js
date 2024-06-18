@@ -13,26 +13,32 @@ export const getUser = async (id) => {
 export const addUser = async (formData) => {
   try {
     const response = await authorizedApiClient.post('/users', formData);
-    return { error: false, data: response.data.message };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: null };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
 export const updateUser = async (id, formData) => {
   try {
     const response = await authorizedApiClient.put(`/users/${id}`, formData);
-    return { error: false, data: response.data.message };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: null };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
 export const deleteUser = async (id) => {
   try {
-    await authorizedApiClient.delete(`/users/${id}`);
-    return { error: false, data: 'User Deleted Succesfully !' };
+    const response = await authorizedApiClient.delete(`/users/${id}`);
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: null };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };

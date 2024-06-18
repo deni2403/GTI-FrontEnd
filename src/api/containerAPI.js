@@ -28,10 +28,11 @@ export const addContainer = async (containerData) => {
     const response = await authorizedApiClient.post('/containers', {
       ...containerData,
     });
-    const data = response.data.container.number;
-    return { error: false, data: `Container ${data} Succesfully Added` };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: 'Failed Add Container.' };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
@@ -40,19 +41,22 @@ export const updateContainer = async (id, containerData) => {
     const response = await authorizedApiClient.put(`/containers/${id}`, {
       ...containerData,
     });
-    const data = response.data.container.number;
-    return { error: false, data: `Container ${data} Succesfully Updated` };
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: null };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
 export const deleteContainer = async (id) => {
   try {
-    await authorizedApiClient.delete(`/containers/${id}`);
-    return { error: false, data: 'Container Succesfully Deleted' };
+    const response = await authorizedApiClient.delete(`/containers/${id}`);
+    const message = response.data.message;
+    return { error: false, data: message };
   } catch (error) {
-    return { error, data: null };
+    const { response } = error;
+    return { error, data: response.data.message };
   }
 };
 
