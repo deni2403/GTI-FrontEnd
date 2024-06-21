@@ -31,7 +31,7 @@ function RepairData({ repairments }) {
                   <td>{repairment.type}</td>
                   <td>{repairment.location}</td>
                   <td>{repairment.age}</td>
-                  <td>{repairment.remarks}</td>
+                  <td className="remark text-lowercase">{repairment.remarks}</td>
                   <td>{repairment.repair ? 'Selesai' : 'On Progress'}</td>
                   <td>
                     <Link to={`/repairments/detail/${repairment.uuid}`}>

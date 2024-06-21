@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import ContainerHistory from '../../components/tables/ContainerHistory';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import { getContainer, getContainerHistory } from '../../api/containerAPI';
-
 
 function InUseDetailPage() {
   const [container, setContainer] = useState({
@@ -17,14 +16,17 @@ function InUseDetailPage() {
     age: '',
     location: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
   const [containerHistory, setContainerHistory] = useState([]);
   const navigate = useNavigate();
   const { id } = useParams();
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchContainer = async () => {
       const data = await getContainer(id);
       setContainer(data.container);
+      setIsLoading(false);
     };
 
     const fetchHistory = async () => {
@@ -59,7 +61,16 @@ function InUseDetailPage() {
                 </Container>
               </Container>
               <hr />
-              <Form>
+              <Form style={{ position: 'relative' }}>
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <fieldset disabled>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="number">Number</Form.Label>

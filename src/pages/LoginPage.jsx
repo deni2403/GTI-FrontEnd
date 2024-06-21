@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginWarning, setLoginWarning] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const { token, isSuccess, isLoading, isError, message } = useSelector(
@@ -20,6 +21,17 @@ function LoginPage() {
   };
 
   useEffect(() => {
+    const accessToken = localStorage.getItem('token');
+    const warning = localStorage.getItem('loginWarning');
+    if (accessToken) {
+      navigate('/dashboard');
+    }
+
+    if (warning) {
+      setLoginWarning(warning);
+      localStorage.removeItem('loginWarning');
+    }
+
     if (token || isSuccess) {
       navigate('/dashboard');
     }
@@ -38,8 +50,13 @@ function LoginPage() {
     >
       <Container className="login-page__section shadow">
         <Container fluid className="login-image d-flex justify-content-center">
-          <Image src="/GTI_logo.png" fluid className="" />
+          <Image src="/GTI_logo.png" fluid />
         </Container>
+        {loginWarning && (
+          <p className="text-danger fs-6 text-center fw-semibold">
+            {loginWarning} !
+          </p>
+        )}
         {isError && (
           <p className="text-danger fs-6 text-center fw-semibold">
             {message} !

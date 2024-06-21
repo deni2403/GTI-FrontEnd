@@ -2,7 +2,13 @@ import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-const ConfirmationModal = ({ show, close, handleSubmit, variant }) => {
+const ConfirmationModal = ({
+  show,
+  close,
+  handleSubmit,
+  variant,
+  loading = false,
+}) => {
   return (
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
@@ -16,10 +22,10 @@ const ConfirmationModal = ({ show, close, handleSubmit, variant }) => {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={close}>
+        <Button variant="secondary" disabled={loading} onClick={close}>
           Cancel
         </Button>
-        <Button variant={variant} onClick={handleSubmit}>
+        <Button variant={variant} disabled={loading} onClick={handleSubmit}>
           {variant && variant === 'danger' ? 'Delete' : 'Finish'}
         </Button>
       </Modal.Footer>
@@ -32,6 +38,7 @@ ConfirmationModal.propTypes = {
   close: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   variant: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default ConfirmationModal;

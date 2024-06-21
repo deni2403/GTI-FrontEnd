@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     if (isError) {
+      localStorage.setItem('loginWarning', 'Please Login First');
       navigate('/');
     }
   }, [isError, navigate]);

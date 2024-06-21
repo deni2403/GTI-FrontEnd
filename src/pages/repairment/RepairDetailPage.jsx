@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Form, Image } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Form,
+  Image,
+  Spinner,
+} from 'react-bootstrap';
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
@@ -20,6 +28,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 function RepairDetailPage() {
+  const [isLoading, setIsLoading] = useState(false);
   const [repairHistory, setRepairHistory] = useState([]);
   const [imagePreview, setImagePreview] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -30,9 +39,11 @@ function RepairDetailPage() {
   const { id } = useParams();
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchRepair = async () => {
       const data = await getRepairment(id);
       formik.setValues(data.repair);
+      setIsLoading(false);
     };
 
     const fetchRepairmentHistory = async () => {
@@ -70,27 +81,35 @@ function RepairDetailPage() {
       formData.append('remarks', values['remarks']);
       formData.append('image', values['image']);
 
+      setIsLoading(true);
       const { error, data } = await updateRepairment(id, formData);
       if (!error) {
         setIsEditing(false);
         NotifToast(data, 'success');
+        setIsLoading(false);
       } else {
         NotifToast(data, 'error');
+        setIsLoading(false);
       }
     },
   });
 
   const handleDeleteData = async () => {
+    setIsLoading(true);
     const { error, data } = await deleteRepairment(id);
 
     if (!error) {
       setShowDeleteModal(false);
       NotifToast(data, 'success');
+      setIsEditing(false);
+      setIsLoading(false);
       setTimeout(() => {
         navigate('/repairments');
       }, 1000);
     } else {
       NotifToast(data, 'error');
+      setIsEditing(false);
+      setIsLoading(false);
     }
   };
 
@@ -99,15 +118,18 @@ function RepairDetailPage() {
   };
 
   const handleFinishRepair = async () => {
+    setIsLoading(true);
     const { error, data } = await finishRepairment(id);
 
     if (!error) {
       setShowFinishModal(false);
       NotifToast(data, 'success');
+      setIsLoading(false);
       setTimeout(() => {
         navigate('/repairments');
       }, 1000);
     } else {
+      setIsLoading(false);
       NotifToast(data, 'error');
     }
   };
@@ -143,6 +165,7 @@ function RepairDetailPage() {
                   <Button
                     onClick={formik.handleSubmit}
                     className="add-button m-0"
+                    disabled={isLoading}
                   >
                     <MdSave className="me-1" />
                     <span>Save</span>
@@ -170,13 +193,23 @@ function RepairDetailPage() {
                       close={handleCloseDeleteModal}
                       handleSubmit={handleDeleteData}
                       variant={'danger'}
+                      loading={isLoading}
                     />
                   </Container>
                 )}
                 <ToastContainer />
               </Container>
               <hr />
-              <Form>
+              <Form style={{ position: 'relative' }}>
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <fieldset disabled>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="number">Number</Form.Label>
@@ -271,6 +304,7 @@ function RepairDetailPage() {
                   close={handleCloseFinishModal}
                   handleSubmit={handleFinishRepair}
                   variant={'success'}
+                  loading={isLoading}
                 />
               </div>
             </Container>

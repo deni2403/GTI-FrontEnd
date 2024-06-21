@@ -4,7 +4,7 @@ import TableTitle from './TableTitle';
 import { showFormattedDate } from '../../utils/Utility';
 import PropTypes from 'prop-types';
 
-const ContainerHistory = ({ containerHistory }) => {
+const ContainerHistory = ({ containerHistory, loading = false }) => {
   return (
     <Container fluid className="contDetail-page__table">
       <TableTitle>Shipments History</TableTitle>
@@ -40,6 +40,7 @@ const ContainerHistory = ({ containerHistory }) => {
 
 ContainerHistory.propTypes = {
   containerHistory: PropTypes.array,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default ContainerHistory;

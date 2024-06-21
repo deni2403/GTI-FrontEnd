@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Spinner } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
@@ -25,6 +25,7 @@ function ShipmentDetailPage() {
   const [contReady, setContReady] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
   const [totalUnit, setTotalUnit] = useState(1);
   const [selectedUnits, setSelectedUnits] = useState([]);
@@ -51,6 +52,7 @@ function ShipmentDetailPage() {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchShipment = async () => {
       const data = await getShipment(id);
       formik.setValues({
@@ -61,6 +63,7 @@ function ShipmentDetailPage() {
       });
       setTotalUnit(data.shipment.container_number.length);
       setSelectedUnits(data.shipment.container_number);
+      setIsLoading(false);
     };
 
     fetchShipment();
@@ -95,12 +98,15 @@ function ShipmentDetailPage() {
         container_number: selectedUnits,
       };
 
+      setIsLoading(true);
       const { error, data } = await updateShipment(id, updatedShipment);
       if (!error) {
         setIsEditing(false);
         NotifToast(data, 'success');
+        setIsLoading(false);
       } else {
         NotifToast(data, 'error');
+        setIsLoading(false);
       }
     },
   });
@@ -108,14 +114,19 @@ function ShipmentDetailPage() {
   const handleDeleteData = async (e) => {
     e.preventDefault();
 
+    setIsLoading(true);
     const { error, data } = await deleteShipment(id);
 
     if (!error) {
       setShowDeleteModal(false);
       NotifToast(data, 'success');
+      setIsEditing(false);
+      setIsLoading(false);
       setTimeout(() => navigate('/shipments'), 1000);
     } else {
       NotifToast(data, 'error');
+      setIsEditing(false);
+      setIsLoading(false);
     }
   };
 
@@ -166,6 +177,7 @@ function ShipmentDetailPage() {
                   <Button
                     onClick={formik.handleSubmit}
                     className="add-button m-0"
+                    disabled={isLoading}
                   >
                     <MdSave className="me-1" />
                     <span>Save</span>
@@ -195,6 +207,7 @@ function ShipmentDetailPage() {
                           close={handleCloseDeleteModal}
                           handleSubmit={handleDeleteData}
                           variant={'danger'}
+                          loading={isLoading}
                         />
                       </>
                     )}
@@ -203,7 +216,17 @@ function ShipmentDetailPage() {
                 <ToastContainer />
               </Container>
               <hr />
-              <Form>
+
+              <Form style={{ position: 'relative' }}>
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <fieldset disabled={user.role == 'Operasional' || !isEditing}>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="number">Book Number</Form.Label>

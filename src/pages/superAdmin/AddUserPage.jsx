@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Image, Button, Form } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Image,
+  Button,
+  Form,
+  Spinner,
+} from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import TableTitle from '../../components/tables/TableTitle';
@@ -12,6 +20,7 @@ import * as Yup from 'yup';
 
 function AddUserPage() {
   const { user } = useSelector((state) => state.auth);
+  const [isLoading, setIsLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState('/user_profile.jpg');
   const navigate = useNavigate();
 
@@ -51,12 +60,15 @@ function AddUserPage() {
         formData.append(key, values[key]);
       }
 
+      setIsLoading(true);
       const { data, error } = await addUser(formData);
 
       if (!error) {
         navigate('/superadmin');
+        setIsLoading(false);
         NotifToast(data, 'success');
       } else {
+        setIsLoading(false);
         NotifToast(data, 'error');
       }
     },
@@ -80,7 +92,19 @@ function AddUserPage() {
             <Container fluid className="create-page__container">
               <TableTitle>Create New User</TableTitle>
               <hr />
-              <Form onSubmit={formik.handleSubmit}>
+              <Form
+                style={{ position: 'relative' }}
+                onSubmit={formik.handleSubmit}
+              >
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <Form.Group className="d-flex my-4 justify-content-center flex-column align-items-center">
                   <Image
                     src={imagePreview}
@@ -204,7 +228,7 @@ function AddUserPage() {
                   </div>
                 </Form.Group>
                 <Container className="d-flex justify-content-end mt-3">
-                  <Button type="submit" className="save-button">
+                  <Button disabled={isLoading} type="submit" className="save-button">
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>

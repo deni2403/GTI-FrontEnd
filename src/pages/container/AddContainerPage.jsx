@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import TableTitle from '../../components/tables/TableTitle';
@@ -15,6 +15,7 @@ function AddContainerPage() {
   const navigate = useNavigate();
   const [otherLocation, setOtherLocation] = useState('');
   const [showOtherLocation, setShowOtherLocation] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -46,12 +47,15 @@ function AddContainerPage() {
         values.location = otherLocation;
       }
 
+      setIsLoading(true);
       const { error, data } = await addContainer(values);
 
       if (!error) {
         navigate('/containers');
+        setIsLoading(false);
         NotifToast(data, 'success');
       } else {
+        setIsLoading(false);
         NotifToast(data, 'error');
       }
     },
@@ -79,7 +83,19 @@ function AddContainerPage() {
             <Container fluid className="create-page__container">
               <TableTitle>Add New Container</TableTitle>
               <hr />
-              <Form onSubmit={formik.handleSubmit}>
+              <Form
+                style={{ position: 'relative' }}
+                onSubmit={formik.handleSubmit}
+              >
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="number">Container Number</Form.Label>
                   <div className="feedback-wrapper">
@@ -190,7 +206,7 @@ function AddContainerPage() {
                   </Form.Group>
                 )}
                 <Container className="d-flex justify-content-end mt-3">
-                  <Button type="submit" className="save-button">
+                  <Button disabled={isLoading} type="submit" className="save-button">
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>

@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Image, Button, Form } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Image,
+  Button,
+  Form,
+  Spinner,
+} from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
@@ -15,6 +23,7 @@ import * as Yup from 'yup';
 function UserDetailPage() {
   const { user } = useSelector((state) => state.auth);
   const [imagePreview, setImagePreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
@@ -27,9 +36,11 @@ function UserDetailPage() {
   }, [user.role, navigate]);
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchUser = async () => {
       const data = await getUser(id);
       formik.setValues(data.user);
+      setIsLoading(false);
     };
 
     fetchUser();
@@ -67,12 +78,15 @@ function UserDetailPage() {
         formData.append(key, values[key]);
       }
 
+      setIsLoading(true);
       const { error } = await updateUser(id, formData);
       if (!error) {
         setIsEditing(false);
         NotifToast('Update User Successful !', 'success');
+        setIsLoading(false);
       } else {
         NotifToast('Failed to update user data!', 'error');
+        setIsLoading(false);
       }
     },
   });
@@ -84,16 +98,19 @@ function UserDetailPage() {
   };
 
   const handleDeleteData = async () => {
+    setIsLoading(true);
     const { error, data } = await deleteUser(id);
 
     if (!error) {
       setShowDeleteModal(false);
       NotifToast(data, 'success');
+      setIsLoading(false);
       setTimeout(() => {
         navigate('/superadmin');
       }, 1000);
     } else {
       NotifToast(data, 'error');
+      setIsLoading(false);
     }
   };
 
@@ -123,6 +140,7 @@ function UserDetailPage() {
                     onClick={formik.handleSubmit}
                     type="submit"
                     className="add-button m-0"
+                    disabled={isLoading}
                   >
                     <MdSave className="me-1" />
                     <span>Save</span>
@@ -150,13 +168,26 @@ function UserDetailPage() {
                       close={handleCloseDeleteModal}
                       handleSubmit={handleDeleteData}
                       variant={'danger'}
+                      loading={isLoading}
                     />
                   </Container>
                 )}
                 <ToastContainer />
               </Container>
               <hr />
-              <Form onSubmit={formik.handleSubmit}>
+              <Form
+                style={{ position: 'relative' }}
+                onSubmit={formik.handleSubmit}
+              >
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <Form.Group className="d-flex my-4 justify-content-center flex-column align-items-center">
                   <Image
                     src={

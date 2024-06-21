@@ -30,7 +30,9 @@ function ShipmentData({ shipments }) {
                   <td>{shipment.number}</td>
                   <td>{shipment.POL}</td>
                   <td>{shipment.POD}</td>
-                  <td>{shipment.remark_description}</td>
+                  <td className="remark text-lowercase">
+                    {shipment.remark_description}
+                  </td>
                   <td>
                     <Link to={`/shipments/detail/${shipment.uuid}`}>
                       <BsInfoCircle />

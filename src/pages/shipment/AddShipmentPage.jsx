@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import TableTitle from '../../components/tables/TableTitle';
@@ -17,6 +17,7 @@ function AddShipmentPage() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [contReady, setContReady] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [totalUnit, setTotalUnit] = useState(1);
   const [selectedUnits, setSelectedUnits] = useState([]);
   const handleGoBack = () => {
@@ -62,6 +63,7 @@ function AddShipmentPage() {
       status: Yup.string().required('Status is required'),
     }),
     onSubmit: async (values) => {
+      setIsLoading(true);
       const { error, data } = await addShipment({
         ...values,
         container_number: selectedUnits,
@@ -69,8 +71,10 @@ function AddShipmentPage() {
 
       if (!error) {
         navigate('/shipments');
+        setIsLoading(false);
         NotifToast(data, 'success');
       } else {
+        setIsLoading(false);
         NotifToast(data, 'error');
       }
     },
@@ -114,7 +118,19 @@ function AddShipmentPage() {
             <Container fluid className="create-page__container">
               <TableTitle>Add New Shipment</TableTitle>
               <hr />
-              <Form onSubmit={formik.handleSubmit}>
+              <Form
+                style={{ position: 'relative' }}
+                onSubmit={formik.handleSubmit}
+              >
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="number">Book Number</Form.Label>
                   <div className="feedback-wrapper">
@@ -353,7 +369,7 @@ function AddShipmentPage() {
                   </Form.Group>
                 )}
                 <Container className="d-flex justify-content-end mt-3">
-                  <Button type="submit" className="save-button">
+                  <Button disabled={isLoading} type="submit" className="save-button">
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>

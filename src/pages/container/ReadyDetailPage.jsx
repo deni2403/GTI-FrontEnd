@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import TableTitle from '../../components/tables/TableTitle';
 import ContainerHistory from '../../components/tables/ContainerHistory';
@@ -21,15 +21,18 @@ import * as Yup from 'yup';
 function ReadyDetailPage() {
   const { user } = useSelector((state) => state.auth);
   const [containerHistory, setContainerHistory] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
 
   useEffect(() => {
+    setIsLoading(true);
     const fetchContainer = async () => {
       const data = await getContainer(id);
       formik.setValues(data.container);
+      setIsLoading(false);
     };
 
     const fetchHistory = async () => {
@@ -66,13 +69,16 @@ function ReadyDetailPage() {
       location: Yup.string().required('Location is required'),
     }),
     onSubmit: async (values) => {
+      setIsLoading(true);
       const { error, data } = await updateContainer(id, values);
 
       if (!error) {
         setIsEditing(false);
         NotifToast(data, 'success');
+        setIsLoading(false);
       } else {
         NotifToast(data, 'error');
+        setIsLoading(false);
       }
     },
   });
@@ -80,16 +86,19 @@ function ReadyDetailPage() {
   const handleDeleteData = async (e) => {
     e.preventDefault();
 
+    setIsLoading(true);
     const { error, data } = await deleteContainer(id);
 
     if (!error) {
       setShowDeleteModal(false);
       NotifToast(data, 'success');
+      setIsLoading(false);
       setTimeout(() => {
         navigate('/containers');
       }, 1000);
     } else {
       NotifToast(data, 'error');
+      setIsLoading(false);
     }
   };
 
@@ -120,6 +129,7 @@ function ReadyDetailPage() {
                       onClick={formik.handleSubmit}
                       type="submit"
                       className="add-button m-0"
+                      disabled={isLoading}
                     >
                       <MdSave className="me-1" />
                       <span>Save</span>
@@ -147,13 +157,26 @@ function ReadyDetailPage() {
                         close={handleCloseDeleteModal}
                         handleSubmit={handleDeleteData}
                         variant={'danger'}
+                        loading={isLoading}
                       />
                     </Container>
                   ))}
                 <ToastContainer />
               </Container>
               <hr />
-              <Form onSubmit={formik.handleSubmit}>
+              <Form
+                style={{ position: 'relative' }}
+                onSubmit={formik.handleSubmit}
+              >
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <fieldset disabled={!isEditing}>
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="number">Number</Form.Label>
@@ -235,7 +258,7 @@ function ReadyDetailPage() {
             </Container>
           </Col>
           <Col className="p-0" xs={12} md={6}>
-            <ContainerHistory containerHistory={containerHistory} />
+            <ContainerHistory containerHistory={containerHistory}/>
           </Col>
         </Row>
       </Container>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button, Form, Image } from 'react-bootstrap';
+import { Container, Row, Col, Button, Form, Image, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { IoReturnUpBackOutline } from 'react-icons/io5';
 import TableTitle from '../../components/tables/TableTitle';
@@ -13,6 +13,7 @@ import * as Yup from 'yup';
 function AddContainerPage() {
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [contReady, setContReady] = useState([]);
   const [defaultValues, setDefaultValues] = useState({
     type: '',
@@ -49,12 +50,15 @@ function AddContainerPage() {
         formData.append(key, values[key]);
       }
 
+      setIsLoading(true);
       const { data, error } = await addRepairment(formData);
 
       if (!error) {
         navigate('/repairments');
+        setIsLoading(false);
         NotifToast(data, 'success');
       } else {
+        setIsLoading(false);
         NotifToast(data, 'error');
       }
     },
@@ -92,7 +96,19 @@ function AddContainerPage() {
             <Container fluid className="create-page__container">
               <TableTitle>Add To Repair</TableTitle>
               <hr />
-              <Form onSubmit={formik.handleSubmit}>
+              <Form
+                style={{ position: 'relative' }}
+                onSubmit={formik.handleSubmit}
+              >
+                {isLoading && (
+                  <Container className="loading-layer z-3 position-absolute d-flex justify-content-center align-items-center rounded">
+                    <Spinner
+                      animation="border"
+                      variant="white"
+                      className="spinner-layer"
+                    />
+                  </Container>
+                )}
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="containerNumber">
                     Container Number
@@ -204,7 +220,7 @@ function AddContainerPage() {
                   </div>
                 </Form.Group>
                 <Container className="d-flex justify-content-end mt-3">
-                  <Button type="submit" className="save-button">
+                  <Button disabled={isLoading} type="submit" className="save-button">
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>
