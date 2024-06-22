@@ -197,16 +197,22 @@ function AddContainerPage() {
                     <Form.Label htmlFor="otherLocation">
                       Others Location
                     </Form.Label>
-                    <Form.Control
-                      id="otherLocation"
-                      name="otherLocation"
-                      value={otherLocation}
-                      onChange={(e) => setOtherLocation(e.target.value)}
-                    />
+                    <div className="feedback-wrapper">
+                      <Form.Control
+                        id="otherLocation"
+                        name="otherLocation"
+                        value={otherLocation}
+                        onChange={(e) => setOtherLocation(e.target.value)}
+                      />
+                    </div>
                   </Form.Group>
                 )}
                 <Container className="d-flex justify-content-end mt-3">
-                  <Button disabled={isLoading} type="submit" className="save-button">
+                  <Button
+                    disabled={isLoading}
+                    type="submit"
+                    className="save-button"
+                  >
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>

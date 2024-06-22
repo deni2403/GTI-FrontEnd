@@ -17,6 +17,7 @@ function ShipmentData({ shipments }) {
               <th>Book Number</th>
               <th>POL</th>
               <th>POD</th>
+              <th>Status</th>
               <th>Remark</th>
               <th>Detail</th>
             </tr>
@@ -30,6 +31,9 @@ function ShipmentData({ shipments }) {
                   <td>{shipment.number}</td>
                   <td>{shipment.POL}</td>
                   <td>{shipment.POD}</td>
+                  <td>
+                    {shipment.status}
+                  </td>
                   <td className="remark text-lowercase">
                     {shipment.remark_description}
                   </td>

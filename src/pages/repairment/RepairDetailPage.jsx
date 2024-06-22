@@ -33,6 +33,7 @@ function RepairDetailPage() {
   const [imagePreview, setImagePreview] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showFinishButton, setShowFinishButton] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
 
   const navigate = useNavigate();
@@ -44,6 +45,12 @@ function RepairDetailPage() {
       const data = await getRepairment(id);
       formik.setValues(data.repair);
       setIsLoading(false);
+
+      if (data.repair.finish) {
+        setShowFinishButton(false);
+      } else {
+        setShowFinishButton(true);
+      }
     };
 
     const fetchRepairmentHistory = async () => {
@@ -291,22 +298,26 @@ function RepairDetailPage() {
                   </div>
                 </Form.Group>
               </Form>
-              <div className="d-flex justify-content-end">
-                <Button
-                  className="add-button"
-                  onClick={() => setShowFinishModal(true)}
-                >
-                  <FaRegCircleCheck className="me-1" />
-                  Finish Repair
-                </Button>
-                <ConfirmationModal
-                  show={showFinishModal}
-                  close={handleCloseFinishModal}
-                  handleSubmit={handleFinishRepair}
-                  variant={'success'}
-                  loading={isLoading}
-                />
-              </div>
+              {showFinishButton && (
+                <div className="d-flex justify-content-end">
+                  {!isEditing && (
+                    <Button
+                      className="add-button"
+                      onClick={() => setShowFinishModal(true)}
+                    >
+                      <FaRegCircleCheck className="me-1" />
+                      Finish Repair
+                    </Button>
+                  )}
+                  <ConfirmationModal
+                    show={showFinishModal}
+                    close={handleCloseFinishModal}
+                    handleSubmit={handleFinishRepair}
+                    variant={'success'}
+                    loading={isLoading}
+                  />
+                </div>
+              )}
             </Container>
           </Col>
           <Col className="p-0" xs={12} md={6}>
