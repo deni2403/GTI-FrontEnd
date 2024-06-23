@@ -365,6 +365,7 @@ function AddShipmentPage() {
                         formik.touched.remark_description &&
                         formik.errors.remark_description
                       }
+                      required
                     />
                   </Form.Group>
                 )}
