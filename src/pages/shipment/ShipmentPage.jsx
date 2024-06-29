@@ -146,7 +146,8 @@ function ShipmentPage() {
                         <h6 className="filter-options__title">From</h6>
                         <DatePicker
                           className="form-control"
-                          selected={startDate || new Date()}
+                          selected={startDate || ''}
+                          placeholderText="Date"
                           onChange={(date) =>
                             setStartDate(handleDateFormat(date))
                           }
@@ -155,7 +156,8 @@ function ShipmentPage() {
                         <h6 className="filter-options__title">To</h6>
                         <DatePicker
                           className="form-control"
-                          selected={endDate || new Date()}
+                          selected={endDate || ''}
+                          placeholderText="Date"
                           onChange={(date) =>
                             setEndDate(handleDateFormat(date))
                           }
