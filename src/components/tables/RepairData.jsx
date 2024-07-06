@@ -34,7 +34,7 @@ function RepairData({ repairments }) {
                   <td className="remark text-lowercase">{repairment.remarks}</td>
                   <td>{repairment.repair ? 'Selesai' : 'On Progress'}</td>
                   <td>
-                    <Link to={`/repairments/detail/${repairment.uuid}`}>
+                    <Link to={`/repairments/${repairment.uuid}/detail`}>
                       <BsInfoCircle />
                     </Link>
                   </td>

@@ -36,9 +36,9 @@ function ContainerData({ containers }) {
                   <td>{container.age}</td>
                   <td>
                     <Link
-                      to={`/containers/${container.status.toLowerCase()}/detail/${
+                      to={`/containers/${container.status.toLowerCase()}/${
                         container.uuid
-                      }`}
+                      }/detail`}
                     >
                       <BsInfoCircle />
                     </Link>

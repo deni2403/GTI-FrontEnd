@@ -38,7 +38,7 @@ function ShipmentData({ shipments }) {
                     {shipment.remark_description}
                   </td>
                   <td>
-                    <Link to={`/shipments/detail/${shipment.uuid}`}>
+                    <Link to={`/shipments/${shipment.uuid}/detail`}>
                       <BsInfoCircle />
                     </Link>
                   </td>

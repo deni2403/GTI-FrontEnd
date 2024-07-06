@@ -51,7 +51,7 @@ function UserTable() {
                     <td>{user.name}</td>
                     <td>{user.email}</td>
                     <td className="text-center">
-                      <Link to={`/superadmin/users/detail/${user.uuid}`}>
+                      <Link to={`/superadmin/users/${user.uuid}/detail`}>
                         <BsInfoCircle />
                       </Link>
                     </td>

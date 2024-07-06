@@ -961,6 +961,7 @@ table {
         background-color: var(--bg-white);
         border-radius: 10px;
         max-width: 480px;
+        min-height: 410px;
         max-height: 515px;
         margin: auto 30px;
 
@@ -1465,8 +1466,9 @@ table {
     .login-page {
 
         .login-page__section {
-            .login-image {
+            min-height: 480px;
 
+            .login-image {
                 img {
                     max-width: 160px;
                     max-height: 160px;
@@ -2125,6 +2127,8 @@ table {
 
     .login-page {
         .login-page__section {
+            min-height: 515px;
+
             .login-image {
                 img {
                     max-width: 180px;

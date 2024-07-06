@@ -42,11 +42,11 @@ function App() {
                     element={<AddContainerPage />}
                   />
                   <Route
-                    path="/containers/ready/detail/:id"
+                    path="/containers/ready/:id/detail"
                     element={<ReadyDetailPage />}
                   />
                   <Route
-                    path="/containers/in-use/detail/:id"
+                    path="/containers/in-use/:id/detail"
                     element={<InUseDetailPage />}
                   />
                   <Route path="/repairments" element={<ContainerRepair />} />
@@ -55,7 +55,7 @@ function App() {
                     element={<AddRepairPage />}
                   />
                   <Route
-                    path="/repairments/detail/:id"
+                    path="/repairments/:id/detail"
                     element={<RepairDetailPage />}
                   />
                   <Route path="/shipments" element={<ShipmentPage />} />
@@ -64,7 +64,7 @@ function App() {
                     element={<AddShipmentPage />}
                   />
                   <Route
-                    path="/shipments/detail/:id"
+                    path="/shipments/:id/detail"
                     element={<ShipmentDetailPage />}
                   />
                   <Route path="/superadmin" element={<SuperAdminPage />} />
@@ -73,7 +73,7 @@ function App() {
                     element={<AddUserPage />}
                   />
                   <Route
-                    path="/superadmin/users/detail/:id"
+                    path="/superadmin/users/:id/detail"
                     element={<UserDetailPage />}
                   />
                   <Route path="*" element={<NotFound />} />
