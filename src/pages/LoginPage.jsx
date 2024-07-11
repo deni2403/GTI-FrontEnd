@@ -4,11 +4,12 @@ import { loginUser, reset } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { Container, Form, Button, Image, Spinner } from 'react-bootstrap';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import NotifToast from '../utils/NotifiactionToast';
+import { ToastContainer } from 'react-toastify';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginWarning, setLoginWarning] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const { token, isSuccess, isLoading, isError, message } = useSelector(
@@ -28,15 +29,19 @@ function LoginPage() {
     }
 
     if (warning) {
-      setLoginWarning(warning);
+      NotifToast(warning, 'error');
       localStorage.removeItem('loginWarning');
+    }
+
+    if (isError) {
+      NotifToast(message, 'error');
     }
 
     if (token || isSuccess) {
       navigate('/dashboard');
     }
     dispatch(reset());
-  }, [token, isSuccess, dispatch, navigate]);
+  }, [token, isSuccess, dispatch, navigate, isError, message]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -52,16 +57,6 @@ function LoginPage() {
         <Container fluid className="login-image d-flex justify-content-center">
           <Image src="/GTI_logo.png" fluid />
         </Container>
-        {loginWarning && (
-          <p className="text-danger fs-6 text-center fw-semibold">
-            {loginWarning} !
-          </p>
-        )}
-        {isError && (
-          <p className="text-danger fs-6 text-center fw-semibold">
-            {message} !
-          </p>
-        )}
         <Container className="login-form">
           <Form onSubmit={handleSubmit}>
             <Form.Group className="login-form__input">
@@ -105,6 +100,7 @@ function LoginPage() {
           </Form>
         </Container>
       </Container>
+      <ToastContainer />
     </Container>
   );
 }
