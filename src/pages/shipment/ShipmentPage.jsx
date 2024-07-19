@@ -24,14 +24,20 @@ function ShipmentPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [searchParams, setSearchParams] = useSearchParams('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || 1),
   );
 
   useEffect(() => {
-    setSearchParams({ page: currentPage });
+    const params = {
+      page: currentPage,
+      ...(searchQuery && { search: searchQuery }),
+    };
+    setSearchParams(params);
   }, []);
 
   useEffect(() => {
@@ -65,13 +71,14 @@ function ShipmentPage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    const newPage = 1;
     const params = {
-      page: 1,
+      page: newPage,
       search: searchQuery,
       ...(startDate && { startDate }),
       ...(endDate && { endDate }),
     };
-
+    setCurrentPage(newPage);
     setSearchParams(params);
   };
 
@@ -82,13 +89,14 @@ function ShipmentPage() {
 
   const handleApplyFilter = (e) => {
     e.preventDefault();
+    const newPage = 1;
     const params = {
-      page: 1,
+      page: newPage,
       ...(startDate && { startDate }),
       ...(endDate && { endDate }),
     };
+    setCurrentPage(newPage);
     setSearchParams(params);
-    setCurrentPage(1);
     setShowFilter(false);
   };
 
@@ -201,6 +209,7 @@ function ShipmentPage() {
               )}
               {totalPages > 0 && (
                 <ReactPaginate
+                  key={currentPage}
                   previousLabel={'<'}
                   nextLabel={'>'}
                   breakLabel={'...'}

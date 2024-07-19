@@ -25,7 +25,9 @@ function ContainerPage() {
   const [containers, setContainers] = useState([]);
   const [locations, setLocations] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
   const [status, setStatus] = useState('');
   const [location, setLocation] = useState('');
   const [totalPages, setTotalPages] = useState(0);
@@ -34,7 +36,12 @@ function ContainerPage() {
   );
 
   useEffect(() => {
-    setSearchParams({ page: currentPage });
+    const params = {
+      page: currentPage,
+      ...(searchQuery && { search: searchQuery }),
+    };
+    setSearchParams(params);
+
     const fetchLocation = async () => {
       const data = await getContainerLocation();
       setLocations(data.location);
@@ -74,13 +81,15 @@ function ContainerPage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    const newPage = 1;
     const params = {
-      page: 1,
+      page: newPage,
       search: searchQuery,
       ...(status && { status }),
       ...(location && { location }),
     };
 
+    setCurrentPage(newPage);
     setSearchParams(params);
   };
 
@@ -91,13 +100,15 @@ function ContainerPage() {
 
   const handleApplyFilter = (e) => {
     e.preventDefault();
+    const newPage = 1;
     const params = {
-      page: 1,
+      page: newPage,
       ...(status && { status }),
       ...(location && { location }),
     };
+
+    setCurrentPage(newPage);
     setSearchParams(params);
-    setCurrentPage(1);
     setShowFilter(false);
   };
 
@@ -208,6 +219,7 @@ function ContainerPage() {
               )}
               {totalPages > 0 && (
                 <ReactPaginate
+                  key={currentPage}
                   previousLabel={'<'}
                   nextLabel={'>'}
                   breakLabel={'...'}

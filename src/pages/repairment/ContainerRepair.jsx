@@ -21,14 +21,20 @@ function ContainerRepair() {
   const [isLoading, setIsLoading] = useState(false);
   const [repairments, setRepairments] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || 1),
   );
 
   useEffect(() => {
-    setSearchParams({ page: currentPage });
+    const params = {
+      page: currentPage,
+      ...(searchQuery && { search: searchQuery }),
+    };
+    setSearchParams(params);
   }, []);
 
   useEffect(() => {
@@ -44,13 +50,21 @@ function ContainerRepair() {
   }, [currentPage, searchParams]);
 
   const onPageChange = ({ selected }) => {
-    setCurrentPage(selected + 1);
-    setSearchParams({ page: selected + 1 });
+    const newPage = selected + 1;
+    setCurrentPage(newPage);
+    const params = {
+      page: newPage,
+      ...(searchQuery && { search: searchQuery }),
+    };
+
+    setSearchParams(params);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setSearchParams({ page: 1, search: searchQuery });
+    const newPage = 1;
+    setCurrentPage(newPage);
+    setSearchParams({ page: newPage, search: searchQuery });
   };
 
   const handleExportData = async () => {
@@ -68,7 +82,10 @@ function ContainerRepair() {
       <Container fluid className="page-container">
         <Row>
           <Col>
-            <Container fluid className="page-container__table-repairment shadow-sm">
+            <Container
+              fluid
+              className="page-container__table-repairment shadow-sm"
+            >
               <Container>
                 <TableTitle>Container Repair List</TableTitle>
               </Container>
@@ -104,6 +121,7 @@ function ContainerRepair() {
               )}
               {totalPages > 0 && (
                 <ReactPaginate
+                  key={currentPage}
                   previousLabel={'<'}
                   nextLabel={'>'}
                   breakLabel={'...'}

@@ -18,14 +18,20 @@ function SuperAdminPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [logs, setLogs] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || 1),
   );
 
   useEffect(() => {
-    setSearchParams({ page: currentPage });
+    const params = {
+      page: currentPage,
+      ...(searchQuery && { search: searchQuery }),
+    };
+    setSearchParams(params);
   }, []);
 
   useEffect(() => {
@@ -41,9 +47,10 @@ function SuperAdminPage() {
   }, [currentPage, searchParams]);
 
   const onPageChange = ({ selected }) => {
-    setCurrentPage(selected + 1);
+    const newPage = selected + 1;
+    setCurrentPage(newPage);
     const params = {
-      page: selected + 1,
+      page: newPage,
       ...(searchQuery && { search: searchQuery }),
     };
 
@@ -52,14 +59,15 @@ function SuperAdminPage() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setSearchParams({ page: 1, search: searchQuery });
+    const newPage = 1;
+    setCurrentPage(newPage);
+    setSearchParams({ page: newPage, search: searchQuery });
   };
 
   if (user.role !== 'Super Admin') {
     navigate('/dashboard');
   }
 
-  
   return (
     <Container fluid className="content-wrapper">
       <Container fluid className="superAdmin-page">
@@ -79,6 +87,7 @@ function SuperAdminPage() {
               {isLoading ? <PlaceHolder /> : <ActivityTable logs={logs} />}
               {totalPages > 0 && (
                 <ReactPaginate
+                  key={currentPage}
                   previousLabel={'<'}
                   nextLabel={'>'}
                   breakLabel={'...'}

@@ -35,6 +35,7 @@ function RepairDetailPage() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showFinishButton, setShowFinishButton] = useState(false);
   const [showFinishModal, setShowFinishModal] = useState(false);
+  const [showButton, setShowButton] = useState(true);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -44,6 +45,7 @@ function RepairDetailPage() {
     const fetchRepair = async () => {
       const data = await getRepairment(id);
       formik.setValues(data.repair);
+      setShowButton(data.repair.finish);
       setIsLoading(false);
 
       if (data.repair.finish) {
@@ -179,22 +181,26 @@ function RepairDetailPage() {
                   </Button>
                 ) : (
                   <Container className="d-flex justify-content-end gap-2 flex-wrap">
-                    <Button
-                      onClick={handleEditData}
-                      variant="success"
-                      className="edit-button"
-                    >
-                      <MdEdit className="me-1" />
-                      <span>Edit</span>
-                    </Button>
-                    <Button
-                      variant="danger"
-                      className="back-button"
-                      onClick={() => setShowDeleteModal(true)}
-                    >
-                      <MdDelete className="me-1" />
-                      <span>Delete</span>
-                    </Button>
+                    {!showButton && (
+                      <>
+                        <Button
+                          onClick={handleEditData}
+                          variant="success"
+                          className="edit-button"
+                        >
+                          <MdEdit className="me-1" />
+                          <span>Edit</span>
+                        </Button>
+                        <Button
+                          variant="danger"
+                          className="back-button"
+                          onClick={() => setShowDeleteModal(true)}
+                        >
+                          <MdDelete className="me-1" />
+                          <span>Delete</span>
+                        </Button>
+                      </>
+                    )}
                     <ConfirmationModal
                       show={showDeleteModal}
                       close={handleCloseDeleteModal}

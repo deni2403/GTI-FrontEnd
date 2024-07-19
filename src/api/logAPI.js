@@ -1,8 +1,8 @@
 import authorizedApiClient from './axios-instance';
 
-export const getLogs = async (page, searchQuery = '') => {
+export const getLogs = async (page, keyword = '') => {
   const response = await authorizedApiClient.get('/logs', {
-    params: { page, search: searchQuery },
+    params: { page, search: keyword },
   });
   return response.data;
 };
