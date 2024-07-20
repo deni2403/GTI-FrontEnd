@@ -245,7 +245,7 @@ function ReadyDetailPage() {
                       <Form.Control
                         id="age"
                         name="age"
-                        value={formik.values.age || ''}
+                        value={formik.values.age || 0}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         isInvalid={formik.touched.age && formik.errors.age}
@@ -261,7 +261,7 @@ function ReadyDetailPage() {
                       <Form.Control
                         id="iddle_days"
                         name="iddle_days"
-                        value={formik.values.iddle_days || ''}
+                        value={formik.values.iddle_days || 0}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         isInvalid={
