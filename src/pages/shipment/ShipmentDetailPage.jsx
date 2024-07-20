@@ -29,6 +29,7 @@ function ShipmentDetailPage() {
   const { id } = useParams();
   const [totalUnit, setTotalUnit] = useState(1);
   const [selectedUnits, setSelectedUnits] = useState([]);
+  const [showButton, setShowButton] = useState(false);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -61,6 +62,7 @@ function ShipmentDetailPage() {
         ETD: new Date(data.shipment.ETD),
         ETA: new Date(data.shipment.ETA),
       });
+      setShowButton(data.shipment.status !== 'Return' ? true : false);
       setTotalUnit(data.shipment.container_number.length);
       setSelectedUnits(data.shipment.container_number);
       setIsLoading(false);
@@ -184,24 +186,28 @@ function ShipmentDetailPage() {
                   </Button>
                 ) : (
                   <Container className="d-flex justify-content-end gap-2 flex-wrap">
-                    <Button
-                      onClick={handleEditData}
-                      variant="success"
-                      className="edit-button"
-                    >
-                      <MdEdit className="me-1" />
-                      <span>Edit</span>
-                    </Button>
+                    {showButton && (
+                      <Button
+                        onClick={handleEditData}
+                        variant="success"
+                        className="edit-button"
+                      >
+                        <MdEdit className="me-1" />
+                        <span>Edit</span>
+                      </Button>
+                    )}
                     {user.role !== 'Operasional' && (
                       <>
-                        <Button
-                          variant="danger"
-                          className="back-button"
-                          onClick={() => setShowDeleteModal(true)}
-                        >
-                          <MdDelete className="me-1" />
-                          <span>Delete</span>
-                        </Button>
+                        {showButton && (
+                          <Button
+                            variant="danger"
+                            className="back-button"
+                            onClick={() => setShowDeleteModal(true)}
+                          >
+                            <MdDelete className="me-1" />
+                            <span>Delete</span>
+                          </Button>
+                        )}
                         <ConfirmationModal
                           show={showDeleteModal}
                           close={handleCloseDeleteModal}
