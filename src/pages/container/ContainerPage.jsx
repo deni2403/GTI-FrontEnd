@@ -30,6 +30,7 @@ function ContainerPage() {
   );
   const [status, setStatus] = useState('');
   const [location, setLocation] = useState('');
+  const [type, setType] = useState('');
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || 1),
@@ -168,6 +169,15 @@ function ContainerPage() {
                           <option hidden>Status</option>
                           <option value="Ready">Ready</option>
                           <option value="In-Use">In Use</option>
+                        </Form.Select>
+                        <h6 className="filter-options__title">Type</h6>
+                        <Form.Select
+                          value={type || ''}
+                          onChange={(e) => setType(e.target.value)}
+                        >
+                          <option hidden>Type</option>
+                          <option value="20 feet">20 feet</option>
+                          <option value="40 feet">40 feet</option>
                         </Form.Select>
                         <h6 className="filter-options__title">Location</h6>
                         <Form.Select

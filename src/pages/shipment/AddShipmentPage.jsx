@@ -194,7 +194,7 @@ function AddShipmentPage() {
                                 container.number,
                               )}
                             >
-                              {container.number}
+                              {`${container.number} - (${container.type})`}
                             </option>
                           ))}
                       </Form.Select>
