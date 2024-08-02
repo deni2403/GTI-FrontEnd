@@ -6,6 +6,7 @@ export const getAllContainers = async (
   searchQuery = '',
   status = '',
   location = '',
+  type = '',
 ) => {
   const response = await authorizedApiClient.get(`/containers`, {
     params: {
@@ -13,6 +14,7 @@ export const getAllContainers = async (
       search: searchQuery,
       status,
       location,
+      type,
     },
   });
   return response.data;

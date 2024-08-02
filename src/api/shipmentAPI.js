@@ -72,3 +72,8 @@ export const exportShipmentData = async (startDate, endDate) => {
     return { error, data: 'Failed to Export Data.' };
   }
 };
+
+export const getVendors = async () => {
+  const response = await authorizedApiClient.get('/vendors');
+  return response.data;
+};

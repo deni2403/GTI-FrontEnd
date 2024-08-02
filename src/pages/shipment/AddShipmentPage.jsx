@@ -8,6 +8,7 @@ import { MdSave } from 'react-icons/md';
 import NotifToast from '../../utils/NotifiactionToast';
 import DatePicker from 'react-datepicker';
 import { getContainersReady } from '../../api/containerAPI';
+import { getVendors } from '../../api/shipmentAPI';
 import { addShipment } from '../../api/shipmentAPI';
 import { handleDateFormat } from '../../utils/Utility';
 import { useFormik } from 'formik';
@@ -17,6 +18,8 @@ function AddShipmentPage() {
   const { user } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [contReady, setContReady] = useState([]);
+  const [vendors, setVendors] = useState([]);
+  const [selectedVendor, setSelectedVendor] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [totalUnit, setTotalUnit] = useState(1);
   const [selectedUnits, setSelectedUnits] = useState([]);
@@ -36,7 +39,13 @@ function AddShipmentPage() {
       setContReady(data.container);
     };
 
+    const fetchVendorsData = async () => {
+      const vendorsData = await getVendors();
+      setVendors(vendorsData.vendors);
+    };
+
     fetchContainersReady();
+    fetchVendorsData();
   }, []);
 
   const formik = useFormik({
@@ -53,7 +62,6 @@ function AddShipmentPage() {
       remark_description: '',
     },
     validationSchema: Yup.object({
-      number: Yup.string().required('Book Number is required'),
       shipper: Yup.string().required('Shipper is required'),
       stuffing_date: Yup.date().required('Stuffing Date is required'),
       POL: Yup.string().required('Port Of Loading is required'),
@@ -66,6 +74,7 @@ function AddShipmentPage() {
       setIsLoading(true);
       const { error, data } = await addShipment({
         ...values,
+        number: selectedVendor,
         container_number: selectedUnits,
       });
 
@@ -90,6 +99,11 @@ function AddShipmentPage() {
     if (totalUnit > 1) {
       setTotalUnit((prevState) => prevState - 1);
     }
+  };
+
+  const handleSelectVendor = (value) => {
+    setSelectedVendor(value);
+    formik.setFieldValue('number', value);
   };
 
   const handleSelectUnit = (index, value) => {
@@ -132,21 +146,29 @@ function AddShipmentPage() {
                   </Container>
                 )}
                 <Form.Group className="form-group">
+                  <Form.Label htmlFor="vendors">Vendors</Form.Label>
+                  <Form.Select
+                    value={selectedVendor}
+                    onChange={(e) => handleSelectVendor(e.target.value)}
+                  >
+                    <option hidden>Select Vendors</option>
+                    {vendors &&
+                      vendors.map((vendor) => (
+                        <option key={vendor.name} value={vendor.book_num || ''}>
+                          {`${vendor.name} - (${vendor.book_code})`}
+                        </option>
+                      ))}
+                  </Form.Select>
+                </Form.Group>
+                <Form.Group className="form-group">
                   <Form.Label htmlFor="number">Book Number</Form.Label>
-                  <div className="feedback-wrapper">
-                    <Form.Control
-                      name="number"
-                      id="number"
-                      type="text"
-                      value={formik.values.number}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.number && formik.errors.number}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      {formik.errors.number}
-                    </Form.Control.Feedback>
-                  </div>
+                  <Form.Control
+                    disabled
+                    name="number"
+                    id="number"
+                    type="text"
+                    defaultValue={selectedVendor}
+                  />
                 </Form.Group>
                 <Form.Group className="form-group">
                   <Form.Label htmlFor="totalUnit">Total Unit</Form.Label>
@@ -370,7 +392,11 @@ function AddShipmentPage() {
                   </Form.Group>
                 )}
                 <Container className="d-flex justify-content-end mt-3">
-                  <Button disabled={isLoading} type="submit" className="save-button">
+                  <Button
+                    disabled={isLoading}
+                    type="submit"
+                    className="save-button"
+                  >
                     <MdSave className="me-1" />
                     <span>Save</span>
                   </Button>

@@ -59,6 +59,7 @@ function ContainerPage() {
         searchQuery,
         status,
         location,
+        type,
       );
       setContainers(data.containers);
       setTotalPages(data.totalPage);
@@ -75,6 +76,7 @@ function ContainerPage() {
       ...(searchQuery && { search: searchQuery }),
       ...(status && { status }),
       ...(location && { location }),
+      ...(type && { type }),
     };
 
     setSearchParams(params);
@@ -88,6 +90,7 @@ function ContainerPage() {
       search: searchQuery,
       ...(status && { status }),
       ...(location && { location }),
+      ...(type && { type }),
     };
 
     setCurrentPage(newPage);
@@ -106,6 +109,7 @@ function ContainerPage() {
       page: newPage,
       ...(status && { status }),
       ...(location && { location }),
+      ...(type && { type }),
     };
 
     setCurrentPage(newPage);
@@ -116,6 +120,7 @@ function ContainerPage() {
   const resetFilter = () => {
     setStatus('');
     setLocation('');
+    setType('');
   };
   //End Filter
 
