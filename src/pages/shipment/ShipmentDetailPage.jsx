@@ -237,12 +237,10 @@ function ShipmentDetailPage() {
                   <Form.Group className="form-group">
                     <Form.Label htmlFor="number">Book Number</Form.Label>
                     <Form.Control
+                      disabled
                       id="number"
                       name="number"
-                      value={formik.values.number || ''}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.number && formik.errors.number}
+                      defaultValue={formik.values.number || ''}
                     />
                   </Form.Group>
                   <Form.Group className="form-group">
