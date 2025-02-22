@@ -1,8 +1,8 @@
 # React + Vite
 
 Login :
-Email : deni_sa@gmail.com<br>
-Password : password123
+<br>Email : deni_sa@gmail.com
+<br>Password : password123
 
 Currently, two official plugins are available:
 
